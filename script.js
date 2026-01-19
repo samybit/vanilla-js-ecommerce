@@ -132,7 +132,7 @@ function register() {
     // 1. Get Inputs
     var name = document.getElementById('regName').value;
     var email = document.getElementById('regEmail').value;
-    var pass = document.getElementById('regPass').value;
+    var password = document.getElementById('regPass').value;
     var errorMsg = document.getElementById('regError');
 
     // 2. Regex Validation
@@ -142,7 +142,7 @@ function register() {
     var passRegex = /^.{6,}$/;
 
     // a. All fields are required
-    if (name.trim() === "" || email.trim() === "" || pass.trim() === "") {
+    if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
         errorMsg.innerText = ERR_REQUIRED;
         return;
     }
@@ -152,7 +152,7 @@ function register() {
         return;
     }
     // c. Password must be at least 6 characters
-    if (!passRegex.test(pass)) {
+    if (!passRegex.test(password)) {
         errorMsg.innerText = ERR_PASSWORD;
         return;
     }
@@ -170,10 +170,10 @@ function register() {
         id: Date.now(),
         name: name,
         email: email,
-        password: pass,
+        password: password,
         role: CUSTOMER
     };
-    // add to users array & add to localStorage
+    // add to users array then add to localStorage
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
@@ -183,17 +183,76 @@ function register() {
 }
 
 // ===========================
+//  LOGIN LOGIC
+// ===========================
+function login() {
+    // 0. Get the users array of object
+    var users = JSON.parse(localStorage.getItem('users'));
+
+    // 1. Get Inputs
+    var email = document.getElementById('loginEmail').value;
+    var password = document.getElementById('loginPass').value;
+    var errorMsg = document.getElementById('loginError');
+
+    // 2. Regex Validation
+    // - Email Pattern
+    var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    // - Password Pattern
+    var passRegex = /^.{6,}$/;
+
+    // a. All fields are required
+    if (email === "" || password === "") {
+        errorMsg.innerText = ERR_REQUIRED;
+        return;
+    }
+    // b. Email must be valid
+    if (!emailRegex.test(email)) {
+        errorMsg.innerText = ERR_EMAIL;
+        return;
+    }
+    // c. Password must be at least 6 characters
+    if (!passRegex.test(password)) {
+        errorMsg.innerText = ERR_PASSWORD;
+        return;
+    }
+
+    // 3. Loop to find user
+    var foundUser = null;
+    for (var i = 0; i < users.length; i++) {
+        if (users[i].email === email && users[i].password === password) {
+            foundUser = users[i];
+            break;
+        }
+    }
+
+    // 4. If user was found: save as current user and redirect to his page
+    if (foundUser) {
+        // Save him as current user to session 
+        localStorage.setItem('currentUser', JSON.stringify(foundUser));
+
+        // Redirect based on Role Admin OR Customer
+        if (foundUser.role === ADMIN) {
+            window.location.href = 'admin.html';
+        } else {
+            window.location.href = 'home.html';
+        }
+    } else {
+        errorMsg.innerText = "Invalid Email or Password";
+    }
+}
+
+// ===========================
 //  Form Submission Handlers
 // ===========================
 
 // Handle Register Form
-document.getElementById('registerSection').addEventListener('submit', function(event) {
+document.getElementById('registerSection').addEventListener('submit', function (event) {
     event.preventDefault();
     register();
 });
 
 // Handle Login Form
-// document.getElementById('loginSection').addEventListener('submit', function(event) {
-//     event.preventDefault();
-//     login();
-// });
+document.getElementById('loginSection').addEventListener('submit', function (event) {
+    event.preventDefault();
+    login();
+});
