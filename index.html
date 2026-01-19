@@ -10,22 +10,20 @@
 
 <body>
 
-  <!-- Login Section -->
-  <div id="loginSection" class="form-container">
+  <form id="loginSection" class="form-container">
     <h2>Login</h2>
 
     <input type="email" id="loginEmail" placeholder="Email">
     <input type="password" id="loginPass" placeholder="Password">
     <p id="loginError" style="color: red;"></p>
 
-    <button onclick="login()">Login</button>
+    <button type="submit">Login</button>
     <p>Don't have an account?
       <button type="button" id="registerLink" class="link-btn">Register here</button>
     </p>
-  </div>
+  </form>
 
-  <!-- Register Section -->
-  <div id="registerSection" class="form-container hidden">
+  <form id="registerSection" class="form-container hidden">
     <h2>Register</h2>
 
     <input type="text" id="regName" placeholder="Full Name">
@@ -33,11 +31,11 @@
     <input type="password" id="regPass" placeholder="Password">
     <p id="regError" style="color: red;"></p>
 
-    <button onclick="register()">Register</button>
+    <button type="submit">Register</button>
     <p>Already have an account?
       <button type="button" id="loginLink" class="link-btn">Login here</button>
     </p>
-  </div>
+  </form>
 
   <script src="script.js"></script>
 </body>

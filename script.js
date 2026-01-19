@@ -181,3 +181,19 @@ function register() {
     alert("Registration Successful! Please Login.");
     showLogin();
 }
+
+// ===========================
+//  Form Submission Handlers
+// ===========================
+
+// Handle Register Form
+document.getElementById('registerSection').addEventListener('submit', function(event) {
+    event.preventDefault();
+    register();
+});
+
+// Handle Login Form
+// document.getElementById('loginSection').addEventListener('submit', function(event) {
+//     event.preventDefault();
+//     login();
+// });
