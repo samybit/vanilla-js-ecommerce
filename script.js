@@ -235,7 +235,7 @@ function login() {
     // 4. If user was found: save as current user and redirect to his page
     if (foundUser) {
         // Save him as current user to session 
-        localStorage.setItem('currentUser', JSON.stringify(foundUser));
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(foundUser));
 
         // Redirect based on Role Admin OR Customer
         if (foundUser.role === ADMIN) {
@@ -264,3 +264,47 @@ document.getElementById('loginSection').addEventListener('submit', function (eve
     event.preventDefault();
     login();
 });
+
+
+// ===========================
+//  LOGOUT & AUTHENTICATION LOGIC
+// ===========================
+
+// Remove the current user if Logout is clicked
+function logout() {
+    localStorage.removeItem(CURRENT_USER_KEY);
+    location.href = 'index.html';
+}
+
+// Check if user is logged in
+function checkAuth() {
+    var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+
+    // 1. Check if user exists
+    if (!user) {
+        location.href = 'index.html';
+        return null;
+    }
+
+    // 2. Get the current page name (e.g., "admin.html", "home.html")
+    var currentPage = location.pathname.split('/').pop();
+
+    // 3. Switch based on Role to protect pages
+    switch (user.role) {
+        case ADMIN:
+            // Admin is ONLY allowed on admin.html. 
+            if (currentPage !== 'admin.html') {
+                location.href = 'admin.html';
+            }
+            break;
+
+        case CUSTOMER:
+            // Customer is NOT allowed on admin.html.
+            if (currentPage === 'admin.html') {
+                location.href = 'home.html';
+            }
+            break;
+    }
+
+    return user;
+}
