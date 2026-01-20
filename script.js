@@ -83,9 +83,10 @@ var ERR_PASSWORD = 'Password must be at least 6 characters'; // Used
 // ===========================
 //  DataBase Initialization
 // ===========================
+
 (function () {
     if (!localStorage.getItem('users')) {
-        localStorage.setItem('users', JSON.stringify([{ id: 1, name: 'Admin', email: 'admin@test.com', password: '123', role: ADMIN }]));
+        localStorage.setItem('users', JSON.stringify([{ id: 1, name: 'Admin', email: 'admin@test.com', password: '123456', role: ADMIN }]));
     }
     if (!localStorage.getItem('products')) {
         localStorage.setItem('products', JSON.stringify([]));
@@ -107,9 +108,11 @@ var ERR_PASSWORD = 'Password must be at least 6 characters'; // Used
     }
 })();
 
+
 // ===========================
 //  Login/Register UI
 // ===========================
+
 document.getElementById('registerLink').addEventListener('click', showRegister);
 function showRegister() {
     document.getElementById('loginSection').classList.add('hidden');
@@ -122,9 +125,21 @@ function showLogin() {
     document.getElementById('loginSection').classList.remove('hidden');
 }
 
+
+// ===========================
+//  Regex Validation LOGIC
+// ===========================
+
+// - Email Pattern
+var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+// - Password Pattern
+var passRegex = /^.{6,}$/;
+
+
 // ===========================
 //  REGISTER LOGIC
 // ===========================
+
 function register() {
     // 0. Get the users array of object
     var users = JSON.parse(localStorage.getItem('users'));
@@ -136,11 +151,6 @@ function register() {
     var errorMsg = document.getElementById('regError');
 
     // 2. Regex Validation
-    // - Email Pattern
-    var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    // - Password Pattern
-    var passRegex = /^.{6,}$/;
-
     // a. All fields are required
     if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
         errorMsg.innerText = ERR_REQUIRED;
@@ -182,9 +192,11 @@ function register() {
     showLogin();
 }
 
+
 // ===========================
 //  LOGIN LOGIC
 // ===========================
+
 function login() {
     // 0. Get the users array of object
     var users = JSON.parse(localStorage.getItem('users'));
@@ -195,11 +207,6 @@ function login() {
     var errorMsg = document.getElementById('loginError');
 
     // 2. Regex Validation
-    // - Email Pattern
-    var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    // - Password Pattern
-    var passRegex = /^.{6,}$/;
-
     // a. All fields are required
     if (email === "" || password === "") {
         errorMsg.innerText = ERR_REQUIRED;
@@ -240,6 +247,7 @@ function login() {
         errorMsg.innerText = "Invalid Email or Password";
     }
 }
+
 
 // ===========================
 //  Form Submission Handlers
