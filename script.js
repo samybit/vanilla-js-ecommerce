@@ -113,13 +113,21 @@ var ERR_PASSWORD = 'Password must be at least 6 characters'; // Used
 //  Login/Register UI
 // ===========================
 
-document.getElementById('registerLink').addEventListener('click', showRegister);
+var registerBtn = document.getElementById('registerBtn');
+if (registerBtn) {
+    registerBtn.addEventListener('click', showRegister);
+}
+
+var loginBtn = document.getElementById('loginBtn');
+if (loginBtn) {
+    loginBtn.addEventListener('click', showLogin);
+}
+
 function showRegister() {
     document.getElementById('loginSection').classList.add('hidden');
     document.getElementById('registerSection').classList.remove('hidden');
 }
 
-document.getElementById('loginLink').addEventListener('click', showLogin);
 function showLogin() {
     document.getElementById('registerSection').classList.add('hidden');
     document.getElementById('loginSection').classList.remove('hidden');
@@ -254,33 +262,53 @@ function login() {
 // ===========================
 
 // Handle Register Form
-document.getElementById('registerSection').addEventListener('submit', function (event) {
-    event.preventDefault();
-    register();
-});
-
-// Handle Login Form
-document.getElementById('loginSection').addEventListener('submit', function (event) {
-    event.preventDefault();
-    login();
-});
-
-
-// ===========================
-//  LOGOUT & AUTHENTICATION LOGIC
-// ===========================
-
-// Remove the current user if Logout is clicked
-function logout() {
-    localStorage.removeItem(CURRENT_USER_KEY);
-    location.href = 'index.html';
+var registerSection = document.getElementById('registerSection');
+if (registerSection) {
+    registerSection.addEventListener('submit', function (event) {
+        event.preventDefault();
+        register();
+    });
 }
 
+// Handle Login Form
+var loginSection = document.getElementById('loginSection');
+if (loginSection) {
+    loginSection.addEventListener('submit', function (event) {
+        event.preventDefault();
+        login();
+    });
+}
+
+// ===========================
+//  LOGOUT LOGIC
+// ===========================
+
+// Get logout button and Add logout event listener
+var logoutBtn = document.getElementById('logoutBtn');
+
+// Check if the button actually exists on this page
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        logout();
+    });
+}
+
+// Logout by removing current user
+function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+}
+
+// ===========================
+// AUTHENTICATION LOGIC
+// ===========================
 // Check if user is logged in
 function checkAuth() {
+    // 0. Get the current user
     var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
 
-    // 1. Check if user exists
+    // 1. Check if current user exists
     if (!user) {
         location.href = 'index.html';
         return null;
