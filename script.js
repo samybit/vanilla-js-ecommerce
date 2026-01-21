@@ -1,28 +1,4 @@
 /* ===============================
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAF1ah54bfahD_QiDOq7pZaT0Xo8P9WvUs",
-  authDomain: "e-commerce-iti-7c879.firebaseapp.com",
-  projectId: "e-commerce-iti-7c879",
-  storageBucket: "e-commerce-iti-7c879.firebasestorage.app",
-  messagingSenderId: "911638572670",
-  appId: "1:911638572670:web:1beb4bbe63c00f395df22f",
-  measurementId: "G-N2T4EC6Q65"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-  ================================ */
-
-/* ===============================
    GLOBAL STANDARD VARIABLES
    (DO NOT RENAME – DO NOT MODIFY)
    =============================== */
@@ -35,6 +11,7 @@ var CUSTOMER = 'customer';
 var PENDING = 'pending';
 var CONFIRMED = 'confirmed';
 var REJECTED = 'rejected';
+var RETURNED = 'returned';
 
 /* LOCAL STORAGE KEYS */
 var USERS_KEY = 'users';
@@ -136,7 +113,7 @@ var ERR_PASSWORD = 'Password must be at least 6 characters';
 //  oooooooo8 ooooo  ooooooo8 oooo   oooo ooooo oooo   oooo  ooooooo8   ooooo         ooooooo     ooooooo8 ooooo  oooooooo8 
 // 888         888 o888    88  8888o  88   888   8888o  88 o888    88    888        o888   888o o888    88  888 o888     88 
 //  888oooooo  888 888    oooo 88 888o88   888   88 888o88 888    oooo   888        888     888 888    oooo 888 888         
-//         888 888 888o    88  88   8888   888   88   8888 888o    88    888      o 888o   o888 888o    88  888 888o     oo 
+//         888 888 888o    88  88   8888   888   88   8888 888o    88    888      order 888o   o888 888o    88  888 888o     oo 
 // o88oooo888 o888o 888ooo888 o88o    88  o888o o88o    88  888ooo888   o888ooooo88   88ooo88    888ooo888 o888o 888oooo88                                                                                                           
 // ===========================
 //  Login/Register UI
@@ -366,12 +343,26 @@ function checkAuth() {
     return user;
 }
 
+// (For login page) Check if user already logged in. If so, redirect to the correct page.
+function checkAlreadyLoggedIn() {
+    if (localStorage.getItem(CURRENT_USER_KEY)) {
+        var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+        if (user.role === 'admin') {
+            location.href = 'admin-dashboard.html';
+        } else {
+            location.href = 'products.html';
+        }
+    }
+}
 
-//      o      ooooooooo  oooo     oooo ooooo oooo   oooo  oooooooooo   o       ooooooo8 ooooooooooo  ooooo         ooooooo     ooooooo8 ooooo  oooooooo8 
-//     888      888    88o 8888o   888   888   8888o  88    888    888 888    o888    88  888    88    888        o888   888o o888    88  888 o888     88 
-//    8  88     888    888 88 888o8 88   888   88 888o88    888oooo88 8  88   888    oooo 888ooo8      888        888     888 888    oooo 888 888         
-//   8oooo88    888    888 88  888  88   888   88   8888    888      8oooo88  888o    88  888    oo    888      o 888o   o888 888o    88  888 888o     oo 
-// o88o  o888o o888ooo88  o88o  8  o88o o888o o88o    88   o888o   o88o  o888o 888ooo888 o888ooo8888  o888ooooo88   88ooo88    888ooo888 o888o 888oooo88                                                                                                                               
+
+
+//      o           oooo               o88                ooooo                               o88              
+//     888     ooooo888  oo ooo oooo   oooo  oo oooooo     888          ooooooo     oooooooo8 oooo   ooooooo   
+//    8  88  888    888   888 888 888   888   888   888    888        888     888 888    88o   888 888     888 
+//   8oooo88 888    888   888 888 888   888   888   888    888      o 888     888  888oo888o   888 888         
+// o88o  o888o 88ooo888o o888o888o888o o888o o888o o888o  o888ooooo88   88ooo88   888     888 o888o  88ooo888  
+//                                                                                 888ooo888                                                                                                                                         
 // ===========================
 // ADMIN PAGE LOGIC 
 // ===========================
@@ -385,6 +376,7 @@ function loadAdminData() {
     renderOrders();
     populateCategorySelect();
 }
+
 
 /**********************************\\
 |        CATEGORY FUNCTIONS         |
@@ -488,12 +480,12 @@ function renderProducts() {
     // 1. get the product array
     var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
     // 2. get and clear the table
-    var tbody = document.getElementById('productTableBody');
-    tbody.innerHTML = "";
+    var tableBody = document.getElementById('productTableBody');
+    tableBody.innerHTML = "";
     // 3. loop through the products and display each one
     for (var i = 0; i < products.length; i++) {
         var product = products[i];
-        tbody.innerHTML += `
+        tableBody.innerHTML += `
             <tr>
                 <td>${product.id}</td>
                 <td><img src="${product.image}" width="50"></td>
@@ -510,7 +502,7 @@ function renderProducts() {
     }
 }
 
-// Save
+// Create or Update
 function saveProduct() {
     // 0. Get the new product values
     var id = document.getElementById('productId').value;
@@ -527,7 +519,7 @@ function saveProduct() {
     var stockRegex = /^\d+$/;             // Allow only whole numbers
     // a. Check Empty Fields
     if (name == "" || image == "" || category == "" || description == "") {
-        error.innerText = "Please fill in all text fields.";
+        error.innerText = "Please fill in all fields.";
         return;
     }
     // b. Check Price
@@ -557,7 +549,7 @@ function saveProduct() {
         }
     } else {
         // CREATE new Product
-        var newProd = {
+        var newProduct = {
             id: Date.now(),
             name: name,
             image: image,
@@ -566,7 +558,7 @@ function saveProduct() {
             category: category,
             description: description
         };
-        products.push(newProd);
+        products.push(newProduct);
     }
     // 5. Save the products new array
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
@@ -634,11 +626,6 @@ function resetProdForm() {
 }
 
 
-
-
-
-
-
 /**********************************\\
 |          ORDER FUNCTIONS          |
 \\**********************************/
@@ -649,44 +636,48 @@ function resetProdForm() {
 //     updates its status property (e.g., changing 'pending' to 'confirmed'). 
 //     It then saves the change and re-renders the order table.
 
+// Display Orders made
 function renderOrders() {
-    var orders = JSON.parse(localStorage.getItem('orders'));
-    var tbody = document.getElementById('orderTableBody');
-    tbody.innerHTML = "";
-
+    // 1. Get the orders array
+    var orders = JSON.parse(localStorage.getItem(ORDERS_KEY));
+    // 2. Get the table for display and empty it
+    var tableBody = document.getElementById('orderTableBody');
+    tableBody.innerHTML = "";
+    // 3. Display no orders if the array is empty
     if (orders.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5'>No orders found.</td></tr>";
+        tableBody.innerHTML = "<tr><td colspan='5'>No orders found.</td></tr>";
         return;
     }
-
+    // 4. Loop through the orders and add them to the table
     for (var i = 0; i < orders.length; i++) {
-        var o = orders[i];
-        // Status color logic
-        var statusColor = o.status === 'pending' ? 'orange' : (o.status === CONFIRMED ? 'green' : 'red');
-
+        // a. Get the order
+        var order = orders[i];
+        // b. Change status color depending on status
+        var statusColor = order.status === 'pending' ? 'orange' : (order.status === CONFIRMED ? 'green' : 'red');
+        // c. Declare action buttons
         var actionButtons = "";
-        if (o.status === 'pending') {
+        // d. buttons when "Pending": Confirm or Reject
+        if (order.status === 'pending') {
             actionButtons = `
-                <button class="btn-small confirm-btn" onclick="updateOrderStatus(${o.id}, ${CONFIRMED})">Confirm</button>
-                <button class="btn-small delete-btn" onclick="updateOrderStatus(${o.id}, ${REJECTED})">Reject</button>
+                <button class="confirm-btn" onclick="updateOrderStatus(${order.id}, '${CONFIRMED}')">Confirm</button>
+                <button class="delete-btn" onclick="updateOrderStatus(${order.id}, '${REJECTED}')">Reject</button>
             `;
         } else {
             actionButtons = "Completed";
         }
-
-        // Return logic
-        if (o.status === 'return_requested') {
+        // e. button when "Return Requested": Confirm Return
+        if (order.status === 'return_requested') {
             actionButtons = `
-                <button class="btn-small delete-btn" onclick="updateOrderStatus(${o.id}, 'returned')">Confirm Return</button>
+                <button class="delete-btn" onclick="updateOrderStatus(${order.id}, '${RETURNED}')">Confirm Return</button>
             `;
         }
-
-        tbody.innerHTML += `
+        // f. Display
+        tableBody.innerHTML += `
             <tr>
-                <td>${o.id}</td>
-                <td>${o.userId}</td>
-                <td>$${o.total}</td>
-                <td style="color:${statusColor}; font-weight:bold;">${o.status}</td>
+                <td>${order.id}</td>
+                <td>${order.userId}</td>
+                <td>$${order.total}</td>
+                <td style="color:${statusColor};">${order.status}</td>
                 <td>${actionButtons}</td>
             </tr>
         `;
@@ -695,14 +686,16 @@ function renderOrders() {
 
 // Update Order Status
 function updateOrderStatus(orderId, newStatus) {
-    var orders = JSON.parse(localStorage.getItem('orders'));
+    // 1. Get the orders array
+    var orders = JSON.parse(localStorage.getItem(ORDERS_KEY));
+    // 2. Find the desired order and update the status
     for (var i = 0; i < orders.length; i++) {
         if (orders[i].id == orderId) {
             orders[i].status = newStatus;
         }
     }
-    localStorage.setItem('orders', JSON.stringify(orders));
-    if (typeof renderOrders === 'function') {
-        renderOrders();
-    }
+    // 3. Save the change
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    // 4. Refresh
+    renderOrders();
 }

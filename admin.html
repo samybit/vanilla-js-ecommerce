@@ -18,14 +18,14 @@
   <div class="admin-section">
     <h3>Manage Categories</h3>
     <input type="text" id="categoryInput" placeholder="New Category Name"">
-    <button onclick="addCategory()" class="btn-small">Add Category</button>
+    <button onclick=" addCategory()" class="btn-small">Add Category</button>
 
     <div id="categoryList">
     </div>
   </div>
 
   <div class="admin-section">
-    <h3>Manage Products [cite: 16, 17]</h3>
+    <h3>Manage Products</h3>
 
     <div class="form-container">
       <h4 id="formTitle">Add New Product</h4>
@@ -65,9 +65,32 @@
     </table>
   </div>
 
+  <div class="admin-section">
+    <h3>Manage Orders</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer ID</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="orderTableBody"> <!-- connected to renderOrders -->
+      </tbody>
+
+    </table>
+  </div>
+
   <script src="script.js"></script>
   <script>
-    checkAuth(); 
+    const user = checkAuth();
+
+    if (user && user.role === 'admin') {
+      loadAdminData();
+    }
   </script>
 </body>
 
