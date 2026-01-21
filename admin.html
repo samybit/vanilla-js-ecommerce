@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Admin</title>
+</head>
+
+<body>
+
+  <nav>
+    <a href="#">DASHBOARD</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </nav>
+
+  <div class="admin-section">
+    <h3>Manage Categories</h3>
+    <input type="text" id="categoryInput" placeholder="New Category Name"">
+    <button onclick="addCategory()" class="btn-small">Add Category</button>
+
+    <div id="categoryList">
+    </div>
+  </div>
+
+  <div class="admin-section">
+    <h3>Manage Products [cite: 16, 17]</h3>
+
+    <div class="form-container">
+      <h4 id="formTitle">Add New Product</h4>
+      <input type="hidden" id="productId">
+      <input type="text" id="productName" placeholder="Product Name">
+      <input type="text" id="productImage" value="https://placehold.co/150">
+
+      <select id="productCategory"> <!-- connected to populateCategorySelect and saveProduct -->
+        <option value="">Select Category</option>
+      </select>
+
+      <input type="number" id="productPrice" placeholder="Price">
+      <textarea id="productDescription" rows="3" placeholder="Description"></textarea>
+      <input type="number" id="productStock" placeholder="Stock Quantity">
+
+      <p id="productError"></p>
+      <button onclick="saveProduct()" id="saveBtn">Create Product</button>
+      <button onclick="resetProdForm()">Clear</button>
+    </div>
+
+    <br>
+    <h4>Current Products</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Category</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productTableBody"> <!-- connected to renderProducts -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    checkAuth(); 
+  </script>
+</body>
+
+</html>

@@ -1,11 +1,35 @@
 /* ===============================
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAF1ah54bfahD_QiDOq7pZaT0Xo8P9WvUs",
+  authDomain: "e-commerce-iti-7c879.firebaseapp.com",
+  projectId: "e-commerce-iti-7c879",
+  storageBucket: "e-commerce-iti-7c879.firebasestorage.app",
+  messagingSenderId: "911638572670",
+  appId: "1:911638572670:web:1beb4bbe63c00f395df22f",
+  measurementId: "G-N2T4EC6Q65"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+  ================================ */
+
+/* ===============================
    GLOBAL STANDARD VARIABLES
    (DO NOT RENAME – DO NOT MODIFY)
    =============================== */
 
 /* USER ROLES */
-var ADMIN = 'admin'; // used
-var CUSTOMER = 'customer'; // used
+var ADMIN = 'admin';
+var CUSTOMER = 'customer';
 
 /* ORDER STATUS */
 var PENDING = 'pending';
@@ -22,11 +46,11 @@ var CURRENT_USER_KEY = 'currentUser';
 var WISHLIST_KEY = 'wishlist';
 
 /* MAIN DATA ARRAYS */
-let users = []; // Used
-let products = []; // Used
-let categories = []; // Used
-let cart = []; // Used
-let orders = []; // Used
+let users = [];
+let products = [];
+let categories = [];
+let cart = [];
+let orders = [];
 
 
 /* CURRENT USER */
@@ -45,7 +69,7 @@ let product = {
     id: '',
     name: '',
     image: '',
-    categoryId: '',
+    category: '', // chaneged from categoryID
     price: 0,
     description: '',
     stock: 0
@@ -71,9 +95,9 @@ let order = {
 };
 
 /* STANDARD ERROR MESSAGES */
-var ERR_REQUIRED = 'This field is required'; // Used
-var ERR_EMAIL = 'Invalid email'; // Used
-var ERR_PASSWORD = 'Password must be at least 6 characters'; // Used
+var ERR_REQUIRED = 'This field is required';
+var ERR_EMAIL = 'Invalid email';
+var ERR_PASSWORD = 'Password must be at least 6 characters';
 
 /* ===============================
    END OF STANDARD VARIABLES
@@ -85,23 +109,23 @@ var ERR_PASSWORD = 'Password must be at least 6 characters'; // Used
 // ===========================
 
 (function () {
-    if (!localStorage.getItem('users')) {
-        localStorage.setItem('users', JSON.stringify([{ id: 1, name: 'Admin', email: 'admin@test.com', password: '123456', role: ADMIN }]));
+    if (!localStorage.getItem(USERS_KEY)) {
+        localStorage.setItem(USERS_KEY, JSON.stringify([{ id: 1, name: 'Admin', email: 'admin@test.com', password: '123456', role: ADMIN }]));
     }
-    if (!localStorage.getItem('products')) {
-        localStorage.setItem('products', JSON.stringify([]));
+    if (!localStorage.getItem(PRODUCTS_KEY)) {
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify([]));
     }
-    if (!localStorage.getItem('categories')) {
-        localStorage.setItem('categories', JSON.stringify([]));
+    if (!localStorage.getItem(CATEGORIES_KEY)) {
+        localStorage.setItem(CATEGORIES_KEY, JSON.stringify([]));
     }
-    if (!localStorage.getItem('cart')) {
-        localStorage.setItem('cart', JSON.stringify([]));
+    if (!localStorage.getItem(CART_KEY)) {
+        localStorage.setItem(CART_KEY, JSON.stringify([]));
     }
-    if (!localStorage.getItem('orders')) {
-        localStorage.setItem('orders', JSON.stringify([]));
+    if (!localStorage.getItem(ORDERS_KEY)) {
+        localStorage.setItem(ORDERS_KEY, JSON.stringify([]));
     }
-    if (!localStorage.getItem('wishlist')) {
-        localStorage.setItem('wishlist', JSON.stringify([]));
+    if (!localStorage.getItem(WISHLIST_KEY)) {
+        localStorage.setItem(WISHLIST_KEY, JSON.stringify([]));
     }
     if (!localStorage.getItem('reviews')) {
         localStorage.setItem('reviews', JSON.stringify([]));
@@ -109,6 +133,11 @@ var ERR_PASSWORD = 'Password must be at least 6 characters'; // Used
 })();
 
 
+//  oooooooo8 ooooo  ooooooo8 oooo   oooo ooooo oooo   oooo  ooooooo8   ooooo         ooooooo     ooooooo8 ooooo  oooooooo8 
+// 888         888 o888    88  8888o  88   888   8888o  88 o888    88    888        o888   888o o888    88  888 o888     88 
+//  888oooooo  888 888    oooo 88 888o88   888   88 888o88 888    oooo   888        888     888 888    oooo 888 888         
+//         888 888 888o    88  88   8888   888   88   8888 888o    88    888      o 888o   o888 888o    88  888 888o     oo 
+// o88oooo888 o888o 888ooo888 o88o    88  o888o o88o    88  888ooo888   o888ooooo88   88ooo88    888ooo888 o888o 888oooo88                                                                                                           
 // ===========================
 //  Login/Register UI
 // ===========================
@@ -296,7 +325,7 @@ if (logoutBtn) {
 
 // Logout by removing current user
 function logout() {
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem(CURRENT_USER_KEY);
     window.location.href = 'index.html';
 }
 
@@ -335,4 +364,345 @@ function checkAuth() {
     }
 
     return user;
+}
+
+
+//      o      ooooooooo  oooo     oooo ooooo oooo   oooo  oooooooooo   o       ooooooo8 ooooooooooo  ooooo         ooooooo     ooooooo8 ooooo  oooooooo8 
+//     888      888    88o 8888o   888   888   8888o  88    888    888 888    o888    88  888    88    888        o888   888o o888    88  888 o888     88 
+//    8  88     888    888 88 888o8 88   888   88 888o88    888oooo88 8  88   888    oooo 888ooo8      888        888     888 888    oooo 888 888         
+//   8oooo88    888    888 88  888  88   888   88   8888    888      8oooo88  888o    88  888    oo    888      o 888o   o888 888o    88  888 888o     oo 
+// o88o  o888o o888ooo88  o88o  8  o88o o888o o88o    88   o888o   o88o  o888o 888ooo888 o888ooo8888  o888ooooo88   88ooo88    888ooo888 o888o 888oooo88                                                                                                                               
+// ===========================
+// ADMIN PAGE LOGIC 
+// ===========================
+//  General Logic - loadAdminData() Initializes the dashboard.
+//      It calls all the necessary render functions immediately upon page load to display 
+//      categories, products, and orders, and populates the category dropdown menu.
+
+function loadAdminData() {
+    renderCategories();
+    renderProducts();
+    renderOrders();
+    populateCategorySelect();
+}
+
+/**********************************\\
+|        CATEGORY FUNCTIONS         |
+\\**********************************/
+//  renderCategories() - Retrieves the list of categories from localStorage and displays them as a list of badges.
+//      It appends a small "x" link to each badge to allow deletion. 
+//  addCategory() - Reads the value from the category input field. 
+//      It validates that the input isn't empty, adds the new category to the stored array, saves it back to localStorage, and refreshes the page data.
+//  deleteCategory(catName) - Prompts the user for confirmation, then filters the stored array to remove the specific category name.
+//      It saves the updated list and refreshes the view. 
+//  populateCategorySelect() - Retrieves current categories and dynamically generates HTML <option> tags
+//      for the "Select Category" dropdown menu found in the product form.
+
+// Render on page load
+function renderCategories() {
+    // 1. Get the categories array
+    var categories = JSON.parse(localStorage.getItem('categories')) || [];
+    // 2. Get the html container and clear it
+    var container = document.getElementById('categoryList');
+    container.innerHTML = "Current Categories: ";
+    // 3. Loop through the categories array and display them
+    for (var i = 0; i < categories.length; i++) {
+        container.innerHTML += `
+        <span style="background:#ddd; padding:5px; margin:5px;">${categories[i]}
+            <a href="#" onclick="deleteCategory('${categories[i]}')" style="color:red; text-decoration:none;">
+                x
+            </a>
+        </span>
+        `;
+    }
+}
+
+// Add
+function addCategory() {
+    // 1. get the input field
+    var input = document.getElementById('categoryInput');
+    // 2. get the category name the admin wants to add
+    var categoryValue = input.value;
+    // 3. warn if empty category name
+    if (categoryValue === "") { alert("Enter a category name"); return; }
+    // 4. get the categories array
+    var categories = JSON.parse(localStorage.getItem('categories')) || [];
+    // 5. add the new category to the array
+    categories.push(categoryValue);
+    // 6. save the array to local storage
+    localStorage.setItem('categories', JSON.stringify(categories));
+    // 7. clear the input field
+    input.value = "";
+    // 8. refresh
+    loadAdminData();
+}
+
+// Delete
+function deleteCategory(categoryName) {
+    // 1. confirm desire for deletion 
+    if (!confirm("Delete category: " + categoryName + "?")) return;
+    // 2. get the categories array
+    var categories = JSON.parse(localStorage.getItem('categories')) || [];
+    // 3. array to hold categories except the one we want to delete
+    var newCategories = [];
+    // 4. add those categories
+    for (var i = 0; i < categories.length; i++) { if (categories[i] !== categoryName) newCategories.push(categories[i]); }
+    // 5. save the new categories to local storage
+    localStorage.setItem('categories', JSON.stringify(newCategories));
+    // 6. refresh
+    loadAdminData();
+}
+
+// Populate Selection
+function populateCategorySelect() {
+    // 1. get the categories array
+    var categories = JSON.parse(localStorage.getItem('categories')) || [];
+    // 2. get the select element
+    var select = document.getElementById('productCategory');
+    // 3. clear the select element
+    select.innerHTML = '<option value="">Select Category</option>';
+    // 4. add the categories as option elements
+    for (var i = 0; i < categories.length; i++) {
+        select.innerHTML += `<option value="${categories[i]}">${categories[i]}</option>`;
+    }
+}
+
+
+/**********************************\\
+|        PRODUCT FUNCTIONS          |
+\\**********************************/
+// renderProducts() Fetches product data from storage and generates an HTML table row for each item. 
+//     It displays details like image, name, price, and stock, and includes "Edit" and "Delete" buttons for each row.
+// saveProduct() Handles both creating and updating products. It validates inputs (ensuring price and stock are numbers). 
+//     If a hidden Product ID exists, it updates the existing entry.
+//     If no ID exists, it generates a new unique ID (using Date.now()) and creates a new entry.
+// deleteProduct(id) Asks the user to confirm, then permanently removes the product 
+//     with the matching ID from localStorage and re-renders the table.
+// editProduct(id) Locates a specific product by its ID and populates the form fields with its current data. 
+//     It also changes the submit button text to "Update Product" to indicate editing mode.
+// resetProdForm() Clears all text from the product input fields and error messages.
+//     It resets the interface back to "Create New Product" mode.
+
+// Render on page load
+function renderProducts() {
+    // 1. get the product array
+    var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    // 2. get and clear the table
+    var tbody = document.getElementById('productTableBody');
+    tbody.innerHTML = "";
+    // 3. loop through the products and display each one
+    for (var i = 0; i < products.length; i++) {
+        var product = products[i];
+        tbody.innerHTML += `
+            <tr>
+                <td>${product.id}</td>
+                <td><img src="${product.image}" width="50"></td>
+                <td>${product.name}</td>
+                <td>$${product.price}</td>
+                <td>${product.category}</td>
+                <td>${product.stock}</td>
+                <td>
+                    <button class="edit-btn" onclick="editProduct(${product.id})">Edit</button>
+                    <button class="delete-btn" onclick="deleteProduct(${product.id})">Delete</button>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Save
+function saveProduct() {
+    // 0. Get the new product values
+    var id = document.getElementById('productId').value;
+    var name = document.getElementById('productName').value;
+    var image = document.getElementById('productImage').value;
+    var price = document.getElementById('productPrice').value;
+    var stock = document.getElementById('productStock').value;
+    var category = document.getElementById('productCategory').value;
+    var description = document.getElementById('productDescription').value;
+    var error = document.getElementById('productError');
+    // 1. Validations
+    // -Numeric inputs regex patterns
+    var priceRegex = /^\d+(\.\d{1,2})?$/; // Allow "10" or "10.50"
+    var stockRegex = /^\d+$/;             // Allow only whole numbers
+    // a. Check Empty Fields
+    if (name == "" || image == "" || category == "" || description == "") {
+        error.innerText = "Please fill in all text fields.";
+        return;
+    }
+    // b. Check Price
+    if (!priceRegex.test(price) || parseFloat(price) <= 0) {
+        error.innerText = "Price must be a valid positive number.";
+        return;
+    }
+    // c. Check Stock
+    if (!stockRegex.test(stock)) {
+        error.innerText = "Stock must be a whole number.";
+        return;
+    }
+    // 3. get the products array
+    var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    // 4. Update or Create a product
+    if (id) {
+        // UPDATE a Product
+        for (var i = 0; i < products.length; i++) {
+            if (products[i].id == id) {
+                products[i].name = name;
+                products[i].image = image;
+                products[i].price = price;
+                products[i].stock = stock;
+                products[i].category = category;
+                products[i].description = description;
+            }
+        }
+    } else {
+        // CREATE new Product
+        var newProd = {
+            id: Date.now(),
+            name: name,
+            image: image,
+            price: price,
+            stock: stock,
+            category: category,
+            description: description
+        };
+        products.push(newProd);
+    }
+    // 5. Save the products new array
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+    // 6. Refresh
+    resetProdForm();
+    renderProducts();
+}
+
+// Delete
+function deleteProduct(id) {
+    // 1. Confirm desire for deletion
+    if (!confirm("Are you sure?")) return;
+    // 2. Get the products array
+    var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY));
+    // 3. new Array to hold products except the one we want to delete
+    var newProds = [];
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id != id) newProds.push(products[i]);
+    }
+    // 4. Save the new array to local storage
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(newProds));
+    // 5. Refresh
+    renderProducts();
+}
+
+// Edit
+function editProduct(id) {
+    // 1. Get the products array
+    var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY));
+    // 2. Find the desired product
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id == id) product = products[i];
+    }
+    // 3. If found
+    if (product) {
+        // Fill the form and change button and title text
+        document.getElementById('productId').value = product.id;
+        document.getElementById('productName').value = product.name;
+        document.getElementById('productImage').value = product.image;
+        document.getElementById('productPrice').value = product.price;
+        document.getElementById('productStock').value = product.stock;
+        document.getElementById('productCategory').value = product.category;
+        document.getElementById('productDescription').value = product.description;
+
+        document.getElementById('saveBtn').innerText = "Update Product";
+        document.getElementById('formTitle').innerText = "Edit Product ID: " + product.id;
+    }
+}
+
+// Reset
+function resetProdForm() {
+    // Empty the form and change button and title text
+    document.getElementById('productId').value = "";
+    document.getElementById('productName').value = "";
+    document.getElementById('productImage').value = "";
+    document.getElementById('productPrice').value = "";
+    document.getElementById('productStock').value = "";
+    document.getElementById('productCategory').value = "";
+    document.getElementById('productDescription').value = "";
+    document.getElementById('productError').innerText = "";
+
+    document.getElementById('saveBtn').innerText = "Create Product";
+    document.getElementById('formTitle').innerText = "Add New Product";
+}
+
+
+
+
+
+
+
+/**********************************\\
+|          ORDER FUNCTIONS          |
+\\**********************************/
+// renderOrders() Displays a list of orders in a table. 
+//     It applies color coding based on status (pending, confirmed, etc.) 
+//     and dynamically shows action buttons depending on the order's current state.
+// updateOrderStatus(orderId, newStatus) Finds a specific order in the database and 
+//     updates its status property (e.g., changing 'pending' to 'confirmed'). 
+//     It then saves the change and re-renders the order table.
+
+function renderOrders() {
+    var orders = JSON.parse(localStorage.getItem('orders'));
+    var tbody = document.getElementById('orderTableBody');
+    tbody.innerHTML = "";
+
+    if (orders.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5'>No orders found.</td></tr>";
+        return;
+    }
+
+    for (var i = 0; i < orders.length; i++) {
+        var o = orders[i];
+        // Status color logic
+        var statusColor = o.status === 'pending' ? 'orange' : (o.status === CONFIRMED ? 'green' : 'red');
+
+        var actionButtons = "";
+        if (o.status === 'pending') {
+            actionButtons = `
+                <button class="btn-small confirm-btn" onclick="updateOrderStatus(${o.id}, ${CONFIRMED})">Confirm</button>
+                <button class="btn-small delete-btn" onclick="updateOrderStatus(${o.id}, ${REJECTED})">Reject</button>
+            `;
+        } else {
+            actionButtons = "Completed";
+        }
+
+        // Return logic
+        if (o.status === 'return_requested') {
+            actionButtons = `
+                <button class="btn-small delete-btn" onclick="updateOrderStatus(${o.id}, 'returned')">Confirm Return</button>
+            `;
+        }
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${o.id}</td>
+                <td>${o.userId}</td>
+                <td>$${o.total}</td>
+                <td style="color:${statusColor}; font-weight:bold;">${o.status}</td>
+                <td>${actionButtons}</td>
+            </tr>
+        `;
+    }
+}
+
+// Update Order Status
+function updateOrderStatus(orderId, newStatus) {
+    var orders = JSON.parse(localStorage.getItem('orders'));
+    for (var i = 0; i < orders.length; i++) {
+        if (orders[i].id == orderId) {
+            orders[i].status = newStatus;
+        }
+    }
+    localStorage.setItem('orders', JSON.stringify(orders));
+    if (typeof renderOrders === 'function') {
+        renderOrders();
+    }
 }
