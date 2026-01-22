@@ -21,6 +21,7 @@ var CART_KEY = 'cart';
 var ORDERS_KEY = 'orders';
 var CURRENT_USER_KEY = 'currentUser';
 var WISHLIST_KEY = 'wishlist';
+var REVIEWS_KEY = 'reviews';
 
 /* MAIN DATA ARRAYS */
 let users = [];
@@ -104,10 +105,11 @@ var ERR_PASSWORD = 'Password must be at least 6 characters';
     if (!localStorage.getItem(WISHLIST_KEY)) {
         localStorage.setItem(WISHLIST_KEY, JSON.stringify([]));
     }
-    if (!localStorage.getItem('reviews')) {
-        localStorage.setItem('reviews', JSON.stringify([]));
+    if (!localStorage.getItem(REVIEWS_KEY)) {
+        localStorage.setItem(REVIEWS_KEY, JSON.stringify([]));
     }
 })();
+
 
 
 //  oooooooo8 ooooo  ooooooo8 oooo   oooo ooooo oooo   oooo  ooooooo8   ooooo         ooooooo     ooooooo8 ooooo  oooooooo8 
@@ -119,21 +121,21 @@ var ERR_PASSWORD = 'Password must be at least 6 characters';
 //  Login/Register UI
 // ===========================
 
+// 1. Get the login/register buttons
 var registerBtn = document.getElementById('registerBtn');
+var loginBtn = document.getElementById('loginBtn');
+// 2. Add event listeners if they exist
 if (registerBtn) {
     registerBtn.addEventListener('click', showRegister);
 }
-
-var loginBtn = document.getElementById('loginBtn');
 if (loginBtn) {
     loginBtn.addEventListener('click', showLogin);
 }
-
+// 0. Show the login/register sections Functions
 function showRegister() {
     document.getElementById('loginSection').classList.add('hidden');
     document.getElementById('registerSection').classList.remove('hidden');
 }
-
 function showLogin() {
     document.getElementById('registerSection').classList.add('hidden');
     document.getElementById('loginSection').classList.remove('hidden');
@@ -141,7 +143,7 @@ function showLogin() {
 
 
 // ===========================
-//  Regex Validation LOGIC
+//  Regex Validations
 // ===========================
 
 // - Email Pattern
@@ -153,7 +155,6 @@ var passRegex = /^.{6,}$/;
 // ===========================
 //  REGISTER LOGIC
 // ===========================
-
 function register() {
     // 0. Get the users array of object
     var users = JSON.parse(localStorage.getItem('users'));
@@ -210,7 +211,6 @@ function register() {
 // ===========================
 //  LOGIN LOGIC
 // ===========================
-
 function login() {
     // 0. Get the users array of object
     var users = JSON.parse(localStorage.getItem('users'));
@@ -289,10 +289,10 @@ if (loginSection) {
 //  LOGOUT LOGIC
 // ===========================
 
-// Get logout button and Add logout event listener
+// 1. Get logout button
 var logoutBtn = document.getElementById('logoutBtn');
 
-// Check if the button actually exists on this page
+// 2. Add logout event listener if it exists
 if (logoutBtn) {
     logoutBtn.addEventListener('click', function (event) {
         event.preventDefault();
@@ -300,7 +300,7 @@ if (logoutBtn) {
     });
 }
 
-// Logout by removing current user
+// 0. Logout by removing current user
 function logout() {
     localStorage.removeItem(CURRENT_USER_KEY);
     window.location.href = 'index.html';
@@ -699,3 +699,12 @@ function updateOrderStatus(orderId, newStatus) {
     // 4. Refresh
     renderOrders();
 }
+
+
+
+//   oooooooo8                          o8                                                  ooooo                               o88              
+// o888     88 oooo  oooo   oooooooo8 o888oo ooooooo  oo ooo oooo   ooooooooo8 oo oooooo     888          ooooooo     oooooooo8 oooo   ooooooo   
+// 888          888   888  888ooooooo  888 888     888 888 888 888 888oooooo8   888    888   888        888     888 888    88o   888 888     888 
+// 888o     oo  888   888          888 888 888     888 888 888 888 888          888          888      o 888     888  888oo888o   888 888         
+//  888oooo88    888o88 8o 88oooooo88   888o 88ooo88  o888o888o888o  88oooo888 o888o        o888ooooo88   88ooo88   888     888 o888o  88ooo888  
+//                                                                                                                   888ooo888                   
