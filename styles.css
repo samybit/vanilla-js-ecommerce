@@ -1,7 +1,15 @@
+/*
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║                           MAIN LAYOUT STYLES                            ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+*/
 /* to hide elements (for switching between login/register) */
 .hidden {
     display: none;
 }
+
 /* to make link buttons look like links */
 .link-btn {
     background: none;
@@ -11,4 +19,92 @@
     cursor: pointer;
     padding: 0;
     font: inherit;
+}
+
+/*
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║                               CART STYLES                               ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+*/
+.cart-container {
+    width: 80%;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+
+.total-section {
+    text-align: right;
+    font-size: 1.5em;
+    margin-top: 20px;
+    border-top: 2px solid #2b2d42;
+    padding-top: 10px;
+}
+
+.checkout-btn {
+    background-color: #2a9d8f;
+    font-size: 18px;
+    padding: 15px 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+/*
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║                             ORDERS STYLES                               ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+*/
+.orders-container {
+    width: 80%;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+th {
+    background-color: #2b2d42;
+    color: white;
+}
+
+.status-pending {
+    color: #fca311;
+    font-weight: bold;
+}
+
+.status-confirmed {
+    color: #2a9d8f;
+    font-weight: bold;
+}
+
+.status-rejected {
+    color: #d90429;
+    font-weight: bold;
 }

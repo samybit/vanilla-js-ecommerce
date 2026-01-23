@@ -788,7 +788,7 @@ function renderHomeProducts() {
                 <button class="wishlist-btn ${heartClass}" onclick="toggleWishlist(${product.id})">♥</button>
                 <img src="${product.image}" alt="${product.name}">
                 <h3>${product.name}</h3>
-                <p style="height: 40px; overflow: hidden;">${product.desc}</p>
+                <p style="height: 40px; overflow: hidden;">${product.description}</p>
                 <p class="price">$${product.price}</p>
                 
                 <p style="color:orange; margin: 5px 0;">
@@ -972,63 +972,140 @@ function checkout() {
 }
 
 
-// ===========================
-// CUSTOMER ORDER HISTORY
-// ===========================
-
-// User Account & History
+/**********************************\\
+|       CUSTOMER ORDER HISTORY      |
+\\**********************************/
+// Filters global orders to find those matching the current User ID.
+// It renders them in a table (newest first), showing status (Pending/Approved) 
+// and provides a "Return Order" button if the order is approved.
 function loadUserOrders() {
-    // 1. Get the current user and orders array
+    // 1. Get the current user and orders info
     var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY)) || [];
     var orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
     // 2. Get the container and clear it
     var container = document.getElementById('userOrdersBody');
     container.innerHTML = "";
-    // 3. Filter orders belonging to this user
+    // 3. Collect orders belonging to this user only
     var myOrders = [];
     for (var i = 0; i < orders.length; i++) {
         if (orders[i].userId === user.id) {
             myOrders.push(orders[i]);
         }
     }
-
+    // 4. clear if no orders
     if (myOrders.length === 0) {
         container.innerHTML = "<tr><td colspan='5' style='text-align:center'>No previous orders found.</td></tr>";
         return;
     }
-
-    // Render logic (Show newest first)
+    // 5. Render. from newest to oldest
     for (var i = myOrders.length - 1; i >= 0; i--) {
-        var o = myOrders[i];
-
-        // Format Items List
+        // 1. Get the order
+        var order = myOrders[i];
+        // 2. Conlect all items in the order
         var itemsList = "";
-        for (var j = 0; j < o.items.length; j++) {
-            itemsList += o.items[j].name + ", ";
+        for (var j = 0; j < order.items.length; j++) {
+            itemsList += order.items[j].name + ", ";
         }
-        // Remove trailing comma
+        // 3. Remove trailing comma
         itemsList = itemsList.substring(0, itemsList.length - 2);
-
-        // Determine CSS class for status
-        var statusClass = "status-" + o.status; // status-pending, status-approved, etc.
-
-        // Return Button
+        // 4. Determine CSS class for status
+        var statusClass = "status-" + order.status;
+        // 5. Create Return Button if order was approved
         var returnBtn = "";
-        if (o.status === 'approved') {
-            returnBtn = `<button onclick="requestReturn(${o.id})" style="background:#fca311; font-size:12px; margin-left:10px;">Return Order</button>`;
+        if (order.status === CONFIRMED) {
+            returnBtn = `<button onclick="requestReturn(${order.id})" style="background:#fca311; font-size:12px; margin-left:10px;">Return Order</button>`;
         }
-
+        // 6. Render the order
         container.innerHTML += `
             <tr>
-                <td>#${o.id}</td>
-                <td>${o.date || 'Just now'}</td>
+                <td>#${order.id}</td>
+                <td>${order.date || 'Just now'}</td>
                 <td>${itemsList}</td>
-                <td>$${o.total}</td>
+                <td>$${order.total}</td>
                 <td class="${statusClass}">
-                    ${o.status.toUpperCase()}
+                    ${order.status}
                     ${returnBtn}
                 </td>
             </tr>
         `;
     }
+}
+
+
+// ===========================
+// RATINGS & REVIEWS
+// ===========================
+
+// Add
+function addReview(productId) {
+    // 1. prompt for a rating
+    var rating = prompt("Rate this product (1-5):");
+    if (rating === null) return;
+    // 2. Validate rating
+    rating = parseInt(rating);
+    if (rating < 1 || rating > 5 || isNaN(rating)) {
+        alert("Please enter a number between 1 and 5");
+        return;
+    }
+    // 3. prompt for a comment
+    var comment = prompt("Leave a comment:");
+    // 4. Get the current user info
+    var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+    // 5. Create a new review
+    var newReview = {
+        productId: productId,
+        userId: user.id,
+        userName: user.name,
+        rating: rating,
+        comment: comment || ""
+    };
+    // 6. get the reviews and add the new one
+    var reviews = JSON.parse(localStorage.getItem(REVIEWS_KEY)) || [];
+    reviews.push(newReview);
+    // 7. Save it to localStorage
+    localStorage.setItem(REVIEWS_KEY, JSON.stringify(reviews));
+    // 8. Alert for success
+    alert("Thank you for your feedback!");
+}
+
+// Get
+function getProductRating(productId) {
+    // 1. Get the reviews
+    var reviews = JSON.parse(localStorage.getItem(REVIEWS_KEY)) || [];
+    // 2. Get the count and total
+    var count = 0;
+    var total = 0;
+    for (var i = 0; i < reviews.length; i++) {
+        if (reviews[i].productId == productId) {
+            total += reviews[i].rating;
+            count++;
+        }
+    }
+    // 3. Return 0 if no reviews
+    if (count === 0) return 0;
+    // 4. Return the average rating
+    return (total / count).toFixed(1);
+}
+
+
+// ===========================
+// Returning Orders
+// ===========================
+
+// Request Return
+function requestReturn(orderId) {
+    // 1. Confirm desire for returning
+    if (!confirm("Request a return for this order?")) return;
+    // 2. Get the orders info
+    var orders = JSON.parse(localStorage.getItem(ORDERS_KEY));
+    // 3. Update the status
+    for (var i = 0; i < orders.length; i++) {
+        if (orders[i].id == orderId) {
+            orders[i].status = 'return_requested';
+        }
+    }
+    // 4. Update the orders info
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    // refresh
+    loadUserOrders();
 }
