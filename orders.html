@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Orders</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- <style>
+    .orders-container {
+      width: 80%;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border: 1px solid #ddd;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      background-color: #2b2d42;
+      color: white;
+    }
+
+    .status-pending {
+      color: #fca311;
+      font-weight: bold;
+    }
+
+    .status-confirmed {
+      color: #2a9d8f;
+      font-weight: bold;
+    }
+
+    .status-rejected {
+      color: #d90429;
+      font-weight: bold;
+    }
+  </style> -->
+</head>
+
+<body>
+
+  <nav>
+    <a href="home.html">HOME</a>
+    <a href="cart.html">CART</a>
+    <a href="orders.html">MY ORDERS</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </nav>
+
+  <div class="orders-container">
+    <h2>My Order History</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Date</th>
+          <th>Items</th>
+          <th>Total Price</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="userOrdersBody"> <!-- connected to loadUserOrders -->
+      </tbody>
+
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    currentUser = checkAuth();
+
+    if (currentUser && currentUser.role === 'customer') {
+      loadUserOrders()
+    }
+  </script>
+</body>
+
+</html>

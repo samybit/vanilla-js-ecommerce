@@ -17,9 +17,23 @@
     <a href="#" id="logoutBtn">Logout</a>
   </nav>
 
+  <div class="filter-bar">
+    <label>Filter by Category:</label>
+    <select id="categoryFilter" onchange="renderHomeProducts()">
+      <option value="all">All Categories</option>
+    </select>
+  </div>
+
+  <div id="productsContainer">
+  </div>
+
   <script src="script.js"></script>
   <script>
-    const user = checkAuth();
+    currentUser = checkAuth();
+    
+    if (currentUser && currentUser.role === 'customer') {
+      initHome();
+    }
   </script>
 </body>
 

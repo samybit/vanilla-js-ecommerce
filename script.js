@@ -112,11 +112,12 @@ var ERR_PASSWORD = 'Password must be at least 6 characters';
 
 
 
-//  oooooooo8 ooooo  ooooooo8 oooo   oooo ooooo oooo   oooo  ooooooo8   ooooo         ooooooo     ooooooo8 ooooo  oooooooo8 
-// 888         888 o888    88  8888o  88   888   8888o  88 o888    88    888        o888   888o o888    88  888 o888     88 
-//  888oooooo  888 888    oooo 88 888o88   888   88 888o88 888    oooo   888        888     888 888    oooo 888 888         
-//         888 888 888o    88  88   8888   888   88   8888 888o    88    888      order 888o   o888 888o    88  888 888o     oo 
-// o88oooo888 o888o 888ooo888 o88o    88  o888o o88o    88  888ooo888   o888ooooo88   88ooo88    888ooo888 o888o 888oooo88                                                                                                           
+//  oooooooo8 o88                           o88                            ooooo                               o88              
+// 888        oooo    oooooooo8 oo oooooo   oooo  oo oooooo     oooooooo8   888          ooooooo     oooooooo8 oooo   ooooooo   
+//  888oooooo  888  888    88o   888   888   888   888   888  888    88o    888        888     888 888    88o   888 888     888 
+//         888 888   888oo888o   888   888   888   888   888   888oo888o    888      o 888     888  888oo888o   888 888         
+// o88oooo888 o888o 888     888 o888o o888o o888o o888o o888o 888     888  o888ooooo88   88ooo88   888     888 o888o  88ooo888  
+//                   888ooo888                                 888ooo888                            888ooo888                                                                                                                         
 // ===========================
 //  Login/Register UI
 // ===========================
@@ -253,9 +254,9 @@ function login() {
 
         // Redirect based on Role Admin OR Customer
         if (foundUser.role === ADMIN) {
-            window.location.href = 'admin.html';
+            window.location.href = 'admin-dashboard.html';
         } else {
-            window.location.href = 'home.html';
+            window.location.href = 'products.html';
         }
     } else {
         errorMsg.innerText = "Invalid Email or Password";
@@ -320,22 +321,22 @@ function checkAuth() {
         return null;
     }
 
-    // 2. Get the current page name (e.g., "admin.html", "home.html")
+    // 2. Get the current page name (e.g., "admin-dashboard.html", "products.html")
     var currentPage = location.pathname.split('/').pop();
 
     // 3. Switch based on Role to protect pages
     switch (user.role) {
         case ADMIN:
-            // Admin is ONLY allowed on admin.html. 
-            if (currentPage !== 'admin.html') {
-                location.href = 'admin.html';
+            // Admin is ONLY allowed on admin-dashboard.html. 
+            if (currentPage !== 'admin-dashboard.html') {
+                location.href = 'admin-dashboard.html';
             }
             break;
 
         case CUSTOMER:
-            // Customer is NOT allowed on admin.html.
-            if (currentPage === 'admin.html') {
-                location.href = 'home.html';
+            // Customer is NOT allowed on admin-dashboard.html.
+            if (currentPage === 'admin-dashboard.html') {
+                location.href = 'products.html';
             }
             break;
     }
@@ -366,10 +367,9 @@ function checkAlreadyLoggedIn() {
 // ===========================
 // ADMIN PAGE LOGIC 
 // ===========================
-//  General Logic - loadAdminData() Initializes the dashboard.
-//      It calls all the necessary render functions immediately upon page load to display 
-//      categories, products, and orders, and populates the category dropdown menu.
-
+//  The main entry point for the Admin page. Initializes the dashboard.
+//  It calls all the necessary render functions immediately upon page load to display 
+//  categories, products, and orders, and populates the category dropdown menu.
 function loadAdminData() {
     renderCategories();
     renderProducts();
@@ -708,3 +708,327 @@ function updateOrderStatus(orderId, newStatus) {
 // 888o     oo  888   888          888 888 888     888 888 888 888 888          888          888      o 888     888  888oo888o   888 888         
 //  888oooo88    888o88 8o 88oooooo88   888o 88ooo88  o888o888o888o  88oooo888 o888o        o888ooooo88   88ooo88   888     888 o888o  88ooo888  
 //                                                                                                                   888ooo888                   
+// ===========================
+//  CUSTOMER HOME PAGE LOGIC
+// ===========================
+// The main entry point for the Home page.
+// Triggers the cart count update, populates the category filter, 
+// and renders the product grid immediately upon page load. 
+function initHome() {
+    updateCartCount();
+    populateHomeCategories();
+    renderHomeProducts();
+}
+
+
+/**********************************\\
+|         DISPLAY FUNCTIONS         |
+\\**********************************/
+// populateHomeCategories(): Fills the filter dropdown menu.
+//     Retrieves categories from localStorage, keeps the default "All" option, 
+//     and dynamically appends the rest as HTML <option> elements. 
+// renderHomeProducts(): displaying products based on current filters and state.
+//     Clears the container and fetches products/wishlist from storage. Filters products based on the selected category.
+//     Generates HTML showing the image, price, rating, stock status, and wishlist. Disables the "Add" button if no stock.
+
+// Populate Filter Dropdown
+function populateHomeCategories() {
+    // 1. Get the categories array
+    var categories = JSON.parse(localStorage.getItem(CATEGORIES_KEY));
+    // 2. Get the select element
+    var select = document.getElementById('categoryFilter');
+    // 3. Keep the first "All" option, append others
+    for (var i = 0; i < categories.length; i++) {
+        select.innerHTML += `<option value="${categories[i]}">${categories[i]}</option>`;
+    }
+}
+
+// Render Products
+function renderHomeProducts() {
+    // 1. Get the html container
+    var container = document.getElementById('productsContainer');
+    // 2. Get the desired category
+    var filterValue = document.getElementById('categoryFilter').value;
+    // 3. Get the products and wishlist arrays
+    var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    var wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY)) || [];
+    // 4. Clear the container
+    container.innerHTML = "";
+    // 5. Check if there are any products
+    if (products.length === 0) {
+        container.innerHTML = "<p align='center'>No products available yet.</p>";
+        return;
+    }
+    // 6. Loop through the products
+    for (var i = 0; i < products.length; i++) {
+        // 1. Get the product
+        var product = products[i];
+        // 2. Get the average rating
+        var averageRating = getProductRating(product.id);
+        // 3. Set the star rating
+        var stars = "★".repeat(Math.round(averageRating)) + "☆".repeat(5 - Math.round(averageRating));
+        // 4. Apply Filtration 
+        if (filterValue !== 'all' && product.category !== filterValue) {
+            continue; // Skip this product
+        }
+        // 5. Check if is in wishlist
+        var heartClass = wishlist.includes(product.id) ? 'wishlist-active' : '';
+
+        // 6. Initialize the buttons state
+        var btnState = "";
+        var btnText = "Add to Cart";
+        // 7. Check if empty stock 
+        if (product.stock <= 0) {
+            btnState = "disabled";
+            btnText = "Out of Stock";
+        }
+        // 8. Display to the container
+        var html = `
+            <div class="col-3 product-card">
+                <button class="wishlist-btn ${heartClass}" onclick="toggleWishlist(${product.id})">♥</button>
+                <img src="${product.image}" alt="${product.name}">
+                <h3>${product.name}</h3>
+                <p style="height: 40px; overflow: hidden;">${product.desc}</p>
+                <p class="price">$${product.price}</p>
+                
+                <p style="color:orange; margin: 5px 0;">
+                    ${stars} <span style="color:black; font-size:0.8em">(${averageRating})</span>
+                    <button onclick="addReview(${product.id})" style="padding:2px 5px; font-size:10px; margin-left:5px; background:#8d99ae;">Rate</button>
+                </p>
+
+                <p class="stock">Stock: ${product.stock}</p>
+                <button onclick="addToCart(${product.id})" ${btnState} style="width:100%">${btnText}</button>
+            </div>
+        `;
+        container.innerHTML += html;
+    }
+}
+
+
+/**********************************\\
+|        PRODUCT INTERACTION        |
+\\**********************************/
+// addToCart(prodId): Adds a selected item to the shopping cart.
+//     Finds the product by ID, pushes it to the cart array in localStorage, and updates the navigation cart badge. 
+// updateCartCount(): Keeps the UI consistent. 
+//     Reads the length of the cart array and updates the badge number in the navigation bar. 
+// toggleWishlist(prodId): Manages the user's favorite items. Checks if an ID is already in the wishlist array.
+//     If yes, it removes it; if no, it adds it. It then re-renders the home products to update the heart icon color.
+
+// Add to Cart
+function addToCart(productId) {
+    // 1. Get current cart and products array
+    var cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    // 2. Get the product from the array
+    var product = null;
+    for (var i = 0; i < products.length; i++) {
+        if (products[i].id == productId) {
+            product = products[i];
+            break;
+        }
+    }
+    // 3. Add the product if exist.
+    if (product) {
+        // a. add to cart
+        cart.push(product);
+        // b.update the cart content and count
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        updateCartCount();
+    }
+}
+
+// Count
+function updateCartCount() {
+    // 1. Get the cart arry
+    var cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    // 2. Get the count element
+    var badge = document.getElementById('cartCount');
+    // 3. Update the count
+    if (badge) badge.innerText = cart.length;
+}
+
+// Wishlist
+function toggleWishlist(productId) {
+    // 1. Get the wishlist array
+    var wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY)) || [];
+    // 2. Get the product's index inside wishlist
+    var index = wishlist.indexOf(productId);
+    // 3. Check if exists
+    if (index === -1) {
+        // a. Add
+        wishlist.push(productId);
+        alert("Added to Wishlist");
+    } else {
+        // b. Remove
+        wishlist.splice(index, 1);
+        alert("Removed from Wishlist");
+    }
+    // 4. Update the wishlist
+    localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+    // 5. Refresh
+    renderHomeProducts();
+}
+
+
+/**********************************\\
+|     CART MANAGMENT & CHECKOUT     |
+\\**********************************/
+// loadCart(): Renders the Shopping Cart page. Loops through cart items to generate a table row for each. 
+//     It calculates the total price and handles the "Empty Cart" display state. 
+// removeFromCart(index): Deletes a specific item from the cart. Removes the item at the specified array index, 
+//     updates localStorage, and immediately re-renders the cart view. 
+// checkout(): Finalizes the purchase. Validates that the cart is not empty. Calculates the final total. 
+//     Creates a new order object (with status 'pending') and saves it to the orders array. 
+//     Clears the cart and redirects the user to the Order History page.
+
+// Display
+function loadCart() {
+    // 1. Get the cart array
+    var cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    // 2. Get the container and total $
+    var container = document.getElementById('cartTableBody');
+    var totalSpan = document.getElementById('cartTotal');
+    // 3. Clear the container and total $
+    container.innerHTML = "";
+    var total = 0;
+    // 4. Check if cart is empty
+    if (cart.length === 0) {
+        container.innerHTML = "<tr><td colspan='5' style='text-align:center'>Your cart is empty. <a href='products.html'>Go Shopping</a></td></tr>";
+        totalSpan.innerText = "0";
+        return;
+    }
+    // 5. Loop through the cart
+    for (var i = 0; i < cart.length; i++) {
+        // a. Get the product
+        var product = cart[i];
+        // b. Add the price to the total
+        total += parseFloat(product.price);
+        // c. Add the product to the container
+        container.innerHTML += `
+            <tr>
+                <td><img src="${product.image}" width="50"></td>
+                <td>${product.name}</td>
+                <td>${product.category}</td>
+                <td>$${product.price}</td>
+                <td><button onclick="removeFromCart(${i})">Remove</button></td>
+            </tr>
+        `;
+    }
+    // 6. Update the total
+    totalSpan.innerText = total;
+}
+
+// Remove
+function removeFromCart(index) {
+    // 1. Get the cart array
+    var cart = JSON.parse(localStorage.getItem(CART_KEY));
+    // 2. Remove 1 item at this desired index
+    cart.splice(index, 1);
+    // 3. Save to localStorage
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    // 4. Refresh
+    loadCart();
+    updateCartCount();
+}
+
+// Checkout
+function checkout() {
+    // 1. Get the cart array
+    var cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    // 2. Check if cart is empty
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+    // 3. Confirm desire to checkout
+    if (!confirm("Are you sure you want to place this order?")) return;
+    // 4. Get Current User info
+    var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+    // 5. Calculate Total of Cart
+    var total = 0;
+    for (var i = 0; i < cart.length; i++) {
+        total += parseFloat(cart[i].price);
+    }
+    // 6. Create new Order Object
+    var newOrder = {
+        id: Date.now(),
+        userId: user.id,
+        items: cart,
+        total: total,
+        status: 'pending',
+        date: new Date().toLocaleDateString()
+    };
+    // 7. Get the orders array
+    var orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
+    // 8. Add the new order
+    orders.push(newOrder);
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    // 8. Clear Cart
+    localStorage.setItem(CART_KEY, JSON.stringify([]));
+    // 9. Redirect
+    alert("Order Placed Successfully! Waiting for Admin approval.");
+    location.href = 'orders.html';
+}
+
+
+// ===========================
+// CUSTOMER ORDER HISTORY
+// ===========================
+
+// User Account & History
+function loadUserOrders() {
+    // 1. Get the current user and orders array
+    var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY)) || [];
+    var orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
+    // 2. Get the container and clear it
+    var container = document.getElementById('userOrdersBody');
+    container.innerHTML = "";
+    // 3. Filter orders belonging to this user
+    var myOrders = [];
+    for (var i = 0; i < orders.length; i++) {
+        if (orders[i].userId === user.id) {
+            myOrders.push(orders[i]);
+        }
+    }
+
+    if (myOrders.length === 0) {
+        container.innerHTML = "<tr><td colspan='5' style='text-align:center'>No previous orders found.</td></tr>";
+        return;
+    }
+
+    // Render logic (Show newest first)
+    for (var i = myOrders.length - 1; i >= 0; i--) {
+        var o = myOrders[i];
+
+        // Format Items List
+        var itemsList = "";
+        for (var j = 0; j < o.items.length; j++) {
+            itemsList += o.items[j].name + ", ";
+        }
+        // Remove trailing comma
+        itemsList = itemsList.substring(0, itemsList.length - 2);
+
+        // Determine CSS class for status
+        var statusClass = "status-" + o.status; // status-pending, status-approved, etc.
+
+        // Return Button
+        var returnBtn = "";
+        if (o.status === 'approved') {
+            returnBtn = `<button onclick="requestReturn(${o.id})" style="background:#fca311; font-size:12px; margin-left:10px;">Return Order</button>`;
+        }
+
+        container.innerHTML += `
+            <tr>
+                <td>#${o.id}</td>
+                <td>${o.date || 'Just now'}</td>
+                <td>${itemsList}</td>
+                <td>$${o.total}</td>
+                <td class="${statusClass}">
+                    ${o.status.toUpperCase()}
+                    ${returnBtn}
+                </td>
+            </tr>
+        `;
+    }
+}

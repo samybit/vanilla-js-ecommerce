@@ -11,8 +11,8 @@
 <body>
 
   <nav>
-    <a href="#">DASHBOARD</a>
-    <a href="#" id="logoutBtn">Logout</a>
+    <a href="#">ADMIN DASHBOARD</a>
+    <a href="#" onclick="logout()">Logout</a>
   </nav>
 
   <div class="admin-section">
@@ -86,9 +86,9 @@
 
   <script src="script.js"></script>
   <script>
-    const user = checkAuth();
+    currentUser = checkAuth();
 
-    if (user && user.role === 'admin') {
+    if (currentUser && currentUser.role === 'admin') {
       loadAdminData();
     }
   </script>
