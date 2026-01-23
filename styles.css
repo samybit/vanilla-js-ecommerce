@@ -76,7 +76,6 @@ textarea {
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
-    /* Ensures padding doesn't widen element */
 }
 
 /*
@@ -241,7 +240,6 @@ th {
 
 #productsContainer {
     display: grid;
-    /* Automatically fit as many cards as possible, min width 250px */
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
     width: 90%;
@@ -269,7 +267,6 @@ th {
     width: 100%;
     height: 180px;
     object-fit: cover;
-    /* Ensures images don't stretch weirdly */
     border-radius: 4px;
 }
 
@@ -311,5 +308,4 @@ th {
 
 .wishlist-active {
     color: #ff4d6d !important;
-    /* Forces red color if active */
 }
