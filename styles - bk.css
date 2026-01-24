@@ -1,0 +1,356 @@
+/*
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║                           MAIN LAYOUT STYLES                            ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+*/
+/* to hide elements (for switching between login/register) */
+.hidden {
+    display: none;
+}
+
+/* to make link buttons look like links */
+.link-btn {
+    background: none;
+    border: none;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding-bottom: 50px;
+}
+
+nav {
+    background-color: #2b2d42;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+nav a:hover {
+    color: #fca311;
+}
+
+button {
+    cursor: pointer;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #2b2d42;
+    color: white;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+input,
+select,
+textarea {
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    /* Spacing between fields */
+    text-align: left;
+    /* Aligns labels to the left */
+}
+
+label {
+    display: block;
+    /* Forces label to be on its own line */
+    margin-bottom: 5px;
+    /* Small space between label and input */
+    font-weight: 600;
+    /* Makes the text slightly bold */
+    color: #2b2d42;
+    /* Matches your theme color */
+}
+
+/*
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║                               CART STYLES                               ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+*/
+.cart-container {
+    width: 80%;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+
+.total-section {
+    text-align: right;
+    font-size: 1.5em;
+    margin-top: 20px;
+    border-top: 2px solid #2b2d42;
+    padding-top: 10px;
+}
+
+.checkout-btn {
+    background-color: #2a9d8f;
+    font-size: 18px;
+    padding: 15px 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+/*
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║                             ORDERS STYLES                               ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+*/
+.orders-container {
+    width: 80%;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+th {
+    background-color: #2b2d42;
+    color: white;
+}
+
+.status-pending {
+    color: #fca311;
+    font-weight: bold;
+}
+
+.status-confirmed {
+    color: #2a9d8f;
+    font-weight: bold;
+}
+
+.status-rejected {
+    color: #d90429;
+    font-weight: bold;
+}
+
+/*
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║                        ADMIN DASHBOARD STYLES                           ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+*/
+
+.admin-section {
+    width: 90%;
+    max-width: 1000px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.admin-section h3 {
+    border-bottom: 2px solid #2b2d42;
+    padding-bottom: 10px;
+    color: #2b2d42;
+}
+
+.form-container {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+#productError,
+#regError,
+#loginError {
+    color: #d90429;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.edit-btn {
+    background-color: #2a9d8f;
+}
+
+.delete-btn {
+    background-color: #d90429;
+}
+
+.btn-small {
+    width: auto;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+/* Error Message Styling */
+.error-msg {
+    color: #d90429;
+    /* Red color */
+    font-size: 0.85em;
+    /* Smaller text */
+    display: none;
+    /* Hidden by default */
+    margin-top: -3px;
+    /* Pull it closer to the input */
+    display: block;
+    /* Ensure it takes up its own line */
+    min-height: 15px;
+    /* Keep space so layout doesn't jump */
+}
+
+/* Class to make border red when error occurs */
+.input-error {
+    border: 1px solid #d90429 !important;
+}
+
+.main-error {
+    color: #d90429;
+    text-align: center;
+    font-weight: bold;
+}
+
+/*
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║                         PRODUCT CARD GRID                               ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+*/
+
+.filter-bar {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.filter-bar select {
+    width: 200px;
+    padding: 10px;
+}
+
+#productsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.product-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    /* For wishlist heart positioning */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.product-card h3 {
+    font-size: 1.1em;
+    margin: 10px 0 5px 0;
+}
+
+.product-card .price {
+    font-size: 1.2em;
+    color: #2a9d8f;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.product-card .stock {
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* Wishlist Heart Button */
+.wishlist-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #ccc;
+    font-size: 1.5em;
+    padding: 2px 6px;
+    border-radius: 50%;
+    line-height: 1;
+}
+
+.wishlist-btn:hover {
+    background: white;
+    color: #ff4d6d;
+}
+
+.wishlist-active {
+    color: #ff4d6d !important;
+}

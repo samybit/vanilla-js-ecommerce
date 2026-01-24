@@ -13,9 +13,19 @@
   <form id="loginSection" class="form-container" novalidate>
     <h2>Login</h2>
 
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPass" placeholder="Password">
-    <p id="loginError"></p>
+    <div class="form-group">
+      <label for="loginEmail">Email Address</label>
+      <input type="email" id="loginEmail" placeholder="Enter your email">
+      <small id="loginEmailError" class="error-msg"></small>
+    </div>
+
+    <div class="form-group">
+      <label for="loginPass">Password</label>
+      <input type="password" id="loginPass" placeholder="Enter your password">
+      <small id="loginPassError" class="error-msg"></small>
+    </div>
+
+    <p id="loginError" class="main-error"></p>
 
     <button type="submit">Login</button>
     <p>Don't have an account?
@@ -23,14 +33,26 @@
     </p>
   </form>
 
-
   <form id="registerSection" class="form-container hidden" novalidate>
     <h2>Register</h2>
 
-    <input type="text" id="regName" placeholder="Full Name">
-    <input type="email" id="regEmail" placeholder="Email">
-    <input type="password" id="regPass" placeholder="Password">
-    <p id="regError"></p>
+    <div class="form-group">
+      <label for="regName">Full Name</label>
+      <input type="text" id="regName" placeholder="Enter your full name">
+      <small id="regNameError" class="error-msg"></small>
+    </div>
+
+    <div class="form-group">
+      <label for="regEmail">Email Address</label>
+      <input type="email" id="regEmail" placeholder="Enter your email">
+      <small id="regEmailError" class="error-msg"></small>
+    </div>
+
+    <div class="form-group">
+      <label for="regPass">Password</label>
+      <input type="password" id="regPass" placeholder="Create a password">
+      <small id="regPassError" class="error-msg"></small>
+    </div>
 
     <button type="submit">Register</button>
     <p>Already have an account?

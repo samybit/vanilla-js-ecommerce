@@ -30,18 +30,46 @@
     <div class="form-container">
       <h4 id="formTitle">Add New Product</h4>
       <input type="hidden" id="productId">
-      <input type="text" id="productName" placeholder="Product Name">
-      <input type="text" id="productImage" value="https://placehold.co/150">
 
-      <select id="productCategory"> <!-- connected to populateCategorySelect and saveProduct -->
-        <option value="">Select Category</option>
-      </select>
+      <div class="form-group">
+        <label>Product Name</label>
+        <input type="text" id="productName" placeholder="Product Name">
+        <small id="nameError" class="error-msg"></small>
+      </div>
 
-      <input type="number" id="productPrice" placeholder="Price">
-      <textarea id="productDescription" rows="3" placeholder="Description"></textarea>
-      <input type="number" id="productStock" placeholder="Stock Quantity">
+      <div class="form-group">
+        <label>Product Image</label>
+        <input type="file" id="productImageFile" accept="image/*">
+        <input type="hidden" id="productImageBase64">
+        <small id="imageError" class="error-msg"></small>
+      </div>
 
-      <p id="productError"></p>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="productCategory">
+          <option value="">Select Category</option>
+        </select>
+        <small id="categoryError" class="error-msg"></small>
+      </div>
+
+      <div class="form-group">
+        <label>Price ($)</label>
+        <input type="number" id="productPrice" placeholder="Price">
+        <small id="priceError" class="error-msg"></small>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="productDescription" rows="3" placeholder="Description"></textarea>
+        <small id="descError" class="error-msg"></small>
+      </div>
+
+      <div class="form-group">
+        <label>Stock Quantity</label>
+        <input type="number" id="productStock" placeholder="Stock Quantity">
+        <small id="stockError" class="error-msg"></small>
+      </div>
+
       <button onclick="saveProduct()" id="saveBtn">Create Product</button>
       <button onclick="resetProdForm()">Clear</button>
     </div>
@@ -60,11 +88,11 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody id="productTableBody"> <!-- connected to renderProducts -->
+      <tbody id="productTableBody">
       </tbody>
     </table>
   </div>
-
+  <!-- connected to renderProducts -->
   <div class="admin-section">
     <h3>Manage Orders</h3>
     <table>
