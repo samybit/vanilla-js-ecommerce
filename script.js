@@ -82,6 +82,54 @@ var ERR_PASSWORD = 'Password must be at least 6 characters';
    =============================== */
 
 
+/* ===============================
+   HELPER FUNCTIONS & SETUP
+   =============================== */
+
+// 1. Helper to show error on specific field
+function showError(inputId, errorId, message) {
+    document.getElementById(errorId).innerText = message;
+    document.getElementById(inputId).classList.add('input-error');
+}
+
+// 2. Helper to clear all errors
+function clearErrors() {
+    // Clear all error messages
+    var messages = document.querySelectorAll('.error-msg');
+    for (var i = 0; i < messages.length; i++) {
+        messages[i].innerText = "";
+    }
+    // Remove red borders
+    var inputs = document.querySelectorAll('input, select, textarea');
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].classList.remove('input-error');
+    }
+}
+
+// 3. Image File Listener (Converts uploaded file to Base64 string)
+var fileInput = document.getElementById('productImageFile');
+if (fileInput) {
+    fileInput.addEventListener('change', function () {
+        var file = this.files[0];
+        if (file) {
+            // Check file size (limit to 500KB to save LocalStorage space)
+            if (file.size > 500000) {
+                alert("File is too big! Please select an image under 500KB.");
+                this.value = ""; // Clear input
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                // Save the base64 string to the hidden input
+                document.getElementById('productImageBase64').value = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+
 // ===========================
 //  DataBase Initialization
 // ===========================
@@ -157,41 +205,52 @@ var passRegex = /^.{6,}$/;
 //  REGISTER LOGIC
 // ===========================
 function register() {
-    // 0. Get the users array of object
-    var users = JSON.parse(localStorage.getItem('users'));
+    // 0. Clear previous errors
+    clearErrors();
 
-    // 1. Get Inputs
+    var users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
     var name = document.getElementById('regName').value;
     var email = document.getElementById('regEmail').value;
     var password = document.getElementById('regPass').value;
-    var errorMsg = document.getElementById('regError');
 
-    // 2. Regex Validation
-    // a. All fields are required
-    if (name.trim() === "" || email.trim() === "" || password.trim() === "") {
-        errorMsg.innerText = ERR_REQUIRED;
-        return;
-    }
-    // b. Email must be valid
-    if (!emailRegex.test(email)) {
-        errorMsg.innerText = ERR_EMAIL;
-        return;
-    }
-    // c. Password must be at least 6 characters
-    if (!passRegex.test(password)) {
-        errorMsg.innerText = ERR_PASSWORD;
-        return;
+    var isValid = true;
+
+    // 1. Validate Name
+    if (name.trim() === "") {
+        showError('regName', 'regNameError', 'Full Name is required');
+        isValid = false;
     }
 
-    // 3. Check if email already exists
-    for (var i = 0; i < users.length; i++) {
-        if (users[i].email === email) {
-            errorMsg.innerText = "Email already registered!";
-            return;
+    // 2. Validate Email
+    if (email.trim() === "") {
+        showError('regEmail', 'regEmailError', 'Email is required');
+        isValid = false;
+    } else if (!emailRegex.test(email)) {
+        showError('regEmail', 'regEmailError', 'Please enter a valid email address');
+        isValid = false;
+    } else {
+        // Check duplicates
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].email === email) {
+                showError('regEmail', 'regEmailError', 'Email is already registered');
+                isValid = false;
+                break;
+            }
         }
     }
 
-    // 4. Create new User Object
+    // 3. Validate Password
+    if (password === "") {
+        showError('regPass', 'regPassError', 'Password is required');
+        isValid = false;
+    } else if (!passRegex.test(password)) {
+        showError('regPass', 'regPassError', 'Password must be at least 6 characters');
+        isValid = false;
+    }
+    // Stop if any error found
+    if (!isValid) return;
+
+    // 4. Success: Create User
     var newUser = {
         id: Date.now(),
         name: name,
@@ -199,11 +258,9 @@ function register() {
         password: password,
         role: CUSTOMER
     };
-    // add to users array then add to localStorage
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
-    // 5. Show Success Message & Switch to Login UI
     alert("Registration Successful! Please Login.");
     showLogin();
 }
@@ -213,32 +270,29 @@ function register() {
 //  LOGIN LOGIC
 // ===========================
 function login() {
-    // 0. Get the users array of object
-    var users = JSON.parse(localStorage.getItem('users'));
+    // 0. Clear previous errors
+    clearErrors();
 
-    // 1. Get Inputs
+    var users = JSON.parse(localStorage.getItem('users')) || [];
     var email = document.getElementById('loginEmail').value;
     var password = document.getElementById('loginPass').value;
-    var errorMsg = document.getElementById('loginError');
+    var mainError = document.getElementById('loginError');
 
-    // 2. Regex Validation
-    // a. All fields are required
-    if (email === "" || password === "") {
-        errorMsg.innerText = ERR_REQUIRED;
-        return;
+    var isValid = true;
+
+    // 1. Basic Field Validation
+    if (email === "") {
+        showError('loginEmail', 'loginEmailError', 'Email is required');
+        isValid = false;
     }
-    // b. Email must be valid
-    if (!emailRegex.test(email)) {
-        errorMsg.innerText = ERR_EMAIL;
-        return;
-    }
-    // c. Password must be at least 6 characters
-    if (!passRegex.test(password)) {
-        errorMsg.innerText = ERR_PASSWORD;
-        return;
+    if (password === "") {
+        showError('loginPass', 'loginPassError', 'Password is required');
+        isValid = false;
     }
 
-    // 3. Loop to find user
+    if (!isValid) return;
+
+    // 2. Check Credentials
     var foundUser = null;
     for (var i = 0; i < users.length; i++) {
         if (users[i].email === email && users[i].password === password) {
@@ -247,19 +301,15 @@ function login() {
         }
     }
 
-    // 4. If user was found: save as current user and redirect to his page
     if (foundUser) {
-        // Save him as current user to session 
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(foundUser));
-
-        // Redirect based on Role Admin OR Customer
         if (foundUser.role === ADMIN) {
-            window.location.href = 'admin-dashboard.html';
+            location.href = 'admin-dashboard.html';
         } else {
-            window.location.href = 'products.html';
+            location.href = 'index.html';
         }
     } else {
-        errorMsg.innerText = "Invalid Email or Password";
+        mainError.innerText = "Invalid Email or Password";
     }
 }
 
@@ -314,10 +364,15 @@ function logout() {
 function checkAuth() {
     // 0. Get the current user
     var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+    var currentPage = location.pathname.split('/').pop();
+
+    if (currentPage === 'index.html' || currentPage === '') {
+        return user;
+    }
 
     // 1. Check if current user exists
     if (!user) {
-        location.href = 'index.html';
+        location.href = 'login.html';
         return null;
     }
 
@@ -336,7 +391,7 @@ function checkAuth() {
         case CUSTOMER:
             // Customer is NOT allowed on admin-dashboard.html.
             if (currentPage === 'admin-dashboard.html') {
-                location.href = 'products.html';
+                location.href = 'index.html';
             }
             break;
     }
@@ -351,7 +406,7 @@ function checkAlreadyLoggedIn() {
         if (user.role === 'admin') {
             location.href = 'admin-dashboard.html';
         } else {
-            location.href = 'products.html';
+            location.href = 'index.html';
         }
     }
 }
@@ -393,16 +448,17 @@ function loadAdminData() {
 // Render on page load
 function renderCategories() {
     // 1. Get the categories array
-    var categories = JSON.parse(localStorage.getItem('categories')) || [];
+    var categories = JSON.parse(localStorage.getItem(CATEGORIES_KEY)) || [];
     // 2. Get the html container and clear it
     var container = document.getElementById('categoryList');
     container.innerHTML = "Current Categories: ";
     // 3. Loop through the categories array and display them
     for (var i = 0; i < categories.length; i++) {
         container.innerHTML += `
-        <span style="background:#ddd; padding:5px; margin:5px;">${categories[i]}
-            <a href="#" onclick="deleteCategory('${categories[i]}')" style="color:red; text-decoration:none;">
-                x
+        <span class="category-tag">
+            ${categories[i]}
+            <a href="#" onclick="deleteCategory('${categories[i]}')" class="delete-cat-btn">
+            ×
             </a>
         </span>
         `;
@@ -504,55 +560,82 @@ function renderProducts() {
 
 // Create or Update
 function saveProduct() {
-    // 0. Get the new product values
+    clearErrors();
+
     var id = document.getElementById('productId').value;
     var name = document.getElementById('productName').value;
-    var image = document.getElementById('productImage').value;
     var price = document.getElementById('productPrice').value;
     var stock = document.getElementById('productStock').value;
     var category = document.getElementById('productCategory').value;
     var description = document.getElementById('productDescription').value;
-    var error = document.getElementById('productError');
-    // 1. Validations
-    // -Numeric inputs regex patterns
-    var priceRegex = /^\d+(\.\d{1,2})?$/; // Allow "10" or "10.50"
-    var stockRegex = /^\d+$/;             // Allow only whole numbers
-    // a. Check Empty Fields
-    if (name == "" || image == "" || category == "" || description == "") {
-        error.innerText = "Please fill in all fields.";
-        return;
+
+    // Get the base64 string from the hidden input
+    var newImage = document.getElementById('productImageBase64').value;
+
+    var isValid = true;
+
+    // 1. Validate Name
+    if (name.trim() === "") {
+        showError('productName', 'nameError', 'Product Name is required');
+        isValid = false;
     }
-    // b. Check Price
-    if (!priceRegex.test(price) || parseFloat(price) <= 0) {
-        error.innerText = "Price must be a valid positive number.";
-        return;
+
+    // 2. Validate Image
+    if (!id && newImage === "") {
+        showError('productImageFile', 'imageError', 'Product Image is required');
+        isValid = false;
     }
-    // c. Check Stock
-    if (!stockRegex.test(stock)) {
-        error.innerText = "Stock must be a whole number.";
-        return;
+
+    // 3. Validate Category
+    if (category === "") {
+        showError('productCategory', 'categoryError', 'Please select a category');
+        isValid = false;
     }
-    // 3. get the products array
+
+    // 4. Validate Price
+    if (price === "" || parseFloat(price) <= 0) {
+        showError('productPrice', 'priceError', 'Price must be a positive number');
+        isValid = false;
+    }
+
+    // 5. Validate Stock
+    if (stock === "" || parseInt(stock) < 0) { // Changed to allow 0 stock
+        showError('productStock', 'stockError', 'Stock cannot be negative');
+        isValid = false;
+    }
+
+    // 6. Validate Description
+    if (description.trim() === "") {
+        showError('productDescription', 'descError', 'Description is required');
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
+    // 7. Logic to Save
     var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
-    // 4. Update or Create a product
+
     if (id) {
-        // UPDATE a Product
+        // UPDATE
         for (var i = 0; i < products.length; i++) {
             if (products[i].id == id) {
                 products[i].name = name;
-                products[i].image = image;
                 products[i].price = price;
                 products[i].stock = stock;
                 products[i].category = category;
                 products[i].description = description;
+                // Only update image if a new one was uploaded
+                if (newImage !== "") {
+                    products[i].image = newImage;
+                }
             }
         }
     } else {
-        // CREATE new Product
+        // CREATE New
         var newProduct = {
             id: Date.now(),
             name: name,
-            image: image,
+            image: newImage,
             price: price,
             stock: stock,
             category: category,
@@ -560,9 +643,8 @@ function saveProduct() {
         };
         products.push(newProduct);
     }
-    // 5. Save the products new array
+
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-    // 6. Refresh
     resetProdForm();
     renderProducts();
 }
@@ -586,23 +668,27 @@ function deleteProduct(id) {
 
 // Edit
 function editProduct(id) {
-    // 1. Get the products array
+    clearErrors();
+
     var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY));
-    // 2. Find the desired product
     var product = null;
+
     for (var i = 0; i < products.length; i++) {
         if (products[i].id == id) product = products[i];
     }
-    // 3. If found
+
     if (product) {
-        // Fill the form and change button and title text
         document.getElementById('productId').value = product.id;
         document.getElementById('productName').value = product.name;
-        document.getElementById('productImage').value = product.image;
         document.getElementById('productPrice').value = product.price;
         document.getElementById('productStock').value = product.stock;
         document.getElementById('productCategory').value = product.category;
         document.getElementById('productDescription').value = product.description;
+
+        // Reset the file input and hidden base64 field
+        // (We don't fill these because we can't set file inputs programmatically for security)
+        document.getElementById('productImageFile').value = "";
+        document.getElementById('productImageBase64').value = "";
 
         document.getElementById('saveBtn').innerText = "Update Product";
         document.getElementById('formTitle').innerText = "Edit Product ID: " + product.id;
@@ -816,11 +902,21 @@ function renderHomeProducts() {
 //     If yes, it removes it; if no, it adds it. It then re-renders the home products to update the heart icon color.
 
 // Add to Cart
+// Add to Cart with Stock Validation
 function addToCart(productId) {
+    var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+
+    if (!user) {
+        alert("Please login to add items to your cart.");
+        window.location.href = 'login.html';
+        return;
+    }
+
     // 1. Get current cart and products array
     var cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
     var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
-    // 2. Get the product from the array
+
+    // 2. Find the product from the DB
     var product = null;
     for (var i = 0; i < products.length; i++) {
         if (products[i].id == productId) {
@@ -828,13 +924,28 @@ function addToCart(productId) {
             break;
         }
     }
-    // 3. Add the product if exist.
+
+    // 3. If product exists, check stock
     if (product) {
-        // a. add to cart
+        // a. Count how many of this item are ALREADY in the cart
+        var currentQtyInCart = 0;
+        for (var j = 0; j < cart.length; j++) {
+            if (cart[j].id == productId) {
+                currentQtyInCart++;
+            }
+        }
+
+        // b. Validation: Can we add one more?
+        if (currentQtyInCart + 1 > product.stock) {
+            alert("Sorry, we only have " + product.stock + " of this item in stock.");
+            return; // Stop here
+        }
+
+        // c. If safe, add to cart
         cart.push(product);
-        // b.update the cart content and count
         localStorage.setItem(CART_KEY, JSON.stringify(cart));
         updateCartCount();
+        alert("Item added to cart!");
     }
 }
 
@@ -850,24 +961,88 @@ function updateCartCount() {
 
 // Wishlist
 function toggleWishlist(productId) {
-    // 1. Get the wishlist array
+    // 0. check user first
+    var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+    if (!user) {
+        alert("Please login to use the wishlist.");
+        window.location.href = 'login.html';
+        return;
+    }
+
     var wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY)) || [];
-    // 2. Get the product's index inside wishlist
     var index = wishlist.indexOf(productId);
-    // 3. Check if exists
+
     if (index === -1) {
-        // a. Add
         wishlist.push(productId);
         alert("Added to Wishlist");
     } else {
-        // b. Remove
         wishlist.splice(index, 1);
         alert("Removed from Wishlist");
     }
-    // 4. Update the wishlist
+
     localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
-    // 5. Refresh
-    renderHomeProducts();
+
+    // REFRESH LOGIC:
+    if (document.getElementById('wishlistContainer')) {
+        renderWishlist();
+    }
+    // If we are on the home page, re-render home products (so heart turns grey)
+    else if (document.getElementById('productsContainer')) {
+        renderHomeProducts();
+    }
+}
+
+// Render Wishlist Page
+function renderWishlist() {
+    var container = document.getElementById('wishlistContainer');
+    var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+    var wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY)) || [];
+
+    container.innerHTML = "";
+
+    if (wishlist.length === 0) {
+        container.innerHTML = "<p>Your wishlist is empty.</p>";
+        // Remove the grid style so the message looks normal
+        container.style.display = "block";
+        return;
+    }
+
+    // Restore grid style if we have items
+    container.style.display = "grid";
+
+    // Loop through ALL products, but only show the ones in the wishlist
+    for (var i = 0; i < products.length; i++) {
+        var product = products[i];
+
+        // CHECK: Is this product ID in the wishlist array?
+        if (wishlist.includes(product.id)) {
+
+            // Calculate stars (reuse logic)
+            var averageRating = getProductRating(product.id);
+            var stars = "★".repeat(Math.round(averageRating)) + "☆".repeat(5 - Math.round(averageRating));
+
+            // Stock Logic (reuse logic)
+            var btnState = "";
+            var btnText = "Add to Cart";
+            if (product.stock <= 0) {
+                btnState = "disabled";
+                btnText = "Out of Stock";
+            }
+
+            container.innerHTML += `
+                <div class="product-card">
+                    <button class="wishlist-btn wishlist-active" onclick="toggleWishlist(${product.id})">♥</button>
+                    
+                    <img src="${product.image}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <p class="price">$${product.price}</p>
+                    <p style="color:orange;">${stars}</p>
+                    
+                    <button onclick="addToCart(${product.id})" ${btnState}>${btnText}</button>
+                </div>
+            `;
+        }
+    }
 }
 
 
@@ -894,7 +1069,7 @@ function loadCart() {
     var total = 0;
     // 4. Check if cart is empty
     if (cart.length === 0) {
-        container.innerHTML = "<tr><td colspan='5' style='text-align:center'>Your cart is empty. <a href='products.html'>Go Shopping</a></td></tr>";
+        container.innerHTML = "<tr><td colspan='5' style='text-align:center'>Your cart is empty. <a href='index.html'>Go Shopping</a></td></tr>";
         totalSpan.innerText = "0";
         return;
     }
@@ -934,23 +1109,43 @@ function removeFromCart(index) {
 
 // Checkout
 function checkout() {
-    // 1. Get the cart array
+    // 1. Get cart
     var cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
-    // 2. Check if cart is empty
+
+    // 2. Basic checks
     if (cart.length === 0) {
         alert("Your cart is empty!");
         return;
     }
-    // 3. Confirm desire to checkout
     if (!confirm("Are you sure you want to place this order?")) return;
-    // 4. Get Current User info
+
+    // 3. Get User and Products Data
     var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
-    // 5. Calculate Total of Cart
+    var products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+
+    // 4. Calculate Quantities & Deduct Stock
+    for (var i = 0; i < cart.length; i++) {
+        var cartItem = cart[i];
+
+        // Find the actual product in the main DB
+        for (var j = 0; j < products.length; j++) {
+            if (products[j].id == cartItem.id) {
+                // Deduct 1 from stock
+                products[j].stock = products[j].stock - 1;
+            }
+        }
+    }
+
+    // 5. Save the updated stock to LocalStorage
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+
+    // 6. Calculate Total Price
     var total = 0;
     for (var i = 0; i < cart.length; i++) {
         total += parseFloat(cart[i].price);
     }
-    // 6. Create new Order Object
+
+    // 7. Create Order Object
     var newOrder = {
         id: Date.now(),
         userId: user.id,
@@ -959,15 +1154,15 @@ function checkout() {
         status: 'pending',
         date: new Date().toLocaleDateString()
     };
-    // 7. Get the orders array
+
+    // 8. Save Order
     var orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
-    // 8. Add the new order
     orders.push(newOrder);
     localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-    // 8. Clear Cart
+
+    // 9. Clear Cart and Redirect
     localStorage.setItem(CART_KEY, JSON.stringify([]));
-    // 9. Redirect
-    alert("Order Placed Successfully! Waiting for Admin approval.");
+    alert("Order Placed Successfully!");
     location.href = 'orders.html';
 }
 
@@ -1038,6 +1233,13 @@ function loadUserOrders() {
 
 // Add
 function addReview(productId) {
+    // 0. check user first
+    var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+    if (!user) {
+        alert("Please login to leave a review.");
+        window.location.href = 'login.html';
+        return;
+    }
     // 1. prompt for a rating
     var rating = prompt("Rate this product (1-5):");
     if (rating === null) return;

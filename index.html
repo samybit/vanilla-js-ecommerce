@@ -5,42 +5,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
-  <title>Login</title>
+  <title>Home</title>
 </head>
 
 <body>
 
-  <form id="loginSection" class="form-container" novalidate>
-    <h2>Login</h2>
+  <nav>
+    <a href="index.html">PRODUCTS</a>
+    <a href="wishlist.html">WISHLIST</a>
+    <a href="cart.html">CART (<span id="cartCount">0</span>)</a>
+    <a href="orders.html">MY ORDERS</a>
 
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPass" placeholder="Password">
-    <p id="loginError"></p>
+    <a href="#" id="authLink">Logout</a>
+  </nav>
 
-    <button type="submit">Login</button>
-    <p>Don't have an account?
-      <button type="button" id="registerBtn" class="link-btn">Register here</button>
-    </p>
-  </form>
+  <div class="filter-bar">
+    <label>Filter by Category:</label>
+    <select id="categoryFilter" onchange="renderHomeProducts()">
+      <option value="all">All Categories</option>
+    </select>
+  </div>
 
-
-  <form id="registerSection" class="form-container hidden" novalidate>
-    <h2>Register</h2>
-
-    <input type="text" id="regName" placeholder="Full Name">
-    <input type="email" id="regEmail" placeholder="Email">
-    <input type="password" id="regPass" placeholder="Password">
-    <p id="regError"></p>
-
-    <button type="submit">Register</button>
-    <p>Already have an account?
-      <button type="button" id="loginBtn" class="link-btn">Login here</button>
-    </p>
-  </form>
+  <div id="productsContainer">
+  </div>
 
   <script src="script.js"></script>
   <script>
-    checkAlreadyLoggedIn();
+    // 1. Run checkAuth (it will now return null for guests instead of redirecting)
+    currentUser = checkAuth();
+
+    // 2. Initialize the page regardless of login status
+    initHome();
+
+    // 3. Handle the Navbar Text (Login vs Logout)
+    var authLink = document.getElementById('authLink');
+    if (currentUser) {
+      authLink.innerText = "Logout";
+      authLink.onclick = logout;
+    } else {
+      authLink.innerText = "Login";
+      authLink.href = "login.html";
+      authLink.onclick = null;
+    }
   </script>
 </body>
 

@@ -1,262 +1,313 @@
 /*
-╔═════════════════════════════════════════════════════════════════════════╗
-║                                                                         ║
-║                           MAIN LAYOUT STYLES                            ║
-║                                                                         ║
-╚═════════════════════════════════════════════════════════════════════════╝
+   =========================================
+   1. VARIABLES & RESET
+   =========================================
 */
-/* to hide elements (for switching between login/register) */
-.hidden {
-    display: none;
+:root {
+    /* --- NEW COLOR PALETTE --- */
+    --primary: #080708;
+    /* Vampire Black */
+    --accent: #3772ff;
+    /* Blue Crayola */
+    --danger: #df2935;
+    /* Amaranth Red */
+    --highlight: #fdca40;
+    /* Sunglow Yellow */
+    --bg-color: #e6e8e6;
+    /* Platinum */
+
+    /* Neutral / Functional Colors */
+    --card-bg: #ffffff;
+    --text-color: #080708;
+    /* Using Primary for main text */
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --radius: 12px;
 }
 
-/* to make link buttons look like links */
-.link-btn {
-    background: none;
-    border: none;
-    color: blue;
-    text-decoration: underline;
-    cursor: pointer;
-    padding: 0;
-    font: inherit;
+* {
+    box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f4f9;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     margin: 0;
-    padding-bottom: 50px;
+    padding-bottom: 60px;
+    line-height: 1.6;
 }
 
+/*
+   =========================================
+   2. NAVIGATION
+   =========================================
+*/
 nav {
-    background-color: #2b2d42;
-    padding: 15px;
-    margin-bottom: 20px;
+    background-color: var(--primary);
+    padding: 0 20px;
+    height: 60px;
     display: flex;
     justify-content: center;
-    gap: 20px;
+    align-items: center;
+    gap: 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 nav a {
-    color: white;
+    color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
-    font-weight: bold;
-    font-size: 1.1em;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    padding: 5px 0;
 }
 
 nav a:hover {
-    color: #fca311;
+    color: var(--highlight);
 }
 
-button {
-    cursor: pointer;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    background-color: #2b2d42;
-    color: white;
-    transition: 0.2s;
+/*
+   =========================================
+   3. FORMS, INPUTS & BUTTONS
+   =========================================
+*/
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
 }
 
-button:hover {
-    opacity: 0.9;
-}
-
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.9em;
 }
 
 input,
 select,
 textarea {
-    padding: 8px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
     width: 100%;
-    box-sizing: border-box;
+    padding: 12px 15px;
+    margin: 0;
+    border: 2px solid transparent;
+    background-color: #ffffff;
+    /* Updated to white for better contrast against new grey bg */
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    background-color: #fff;
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.15);
+    /* Updated to match new accent */
+}
+
+.error-msg {
+    color: var(--danger);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 5px;
+    display: block;
+    min-height: 20px;
+}
+
+.input-error {
+    border-color: var(--danger) !important;
+    background-color: rgba(223, 41, 53, 0.05) !important;
+    /* Updated fade */
+}
+
+.main-error {
+    color: var(--danger);
+    text-align: center;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background-color: var(--primary);
+    color: white;
+    transition: transform 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+.link-btn {
+    background: none;
+    color: var(--accent);
+    padding: 0;
+    box-shadow: none;
+    transform: none;
+    text-decoration: underline;
+    display: inline;
+}
+
+.link-btn:hover {
+    color: var(--primary);
+    transform: none;
+    background: none;
 }
 
 /*
-╔═════════════════════════════════════════════════════════════════════════╗
-║                                                                         ║
-║                               CART STYLES                               ║
-║                                                                         ║
-╚═════════════════════════════════════════════════════════════════════════╝
+   =========================================
+   4. LAYOUT CONTAINERS
+   =========================================
 */
-.cart-container {
-    width: 80%;
-    margin: 30px auto;
-    background: white;
-    padding: 20px;
-    border: 1px solid #ddd;
+.hidden {
+    display: none !important;
 }
 
-.total-section {
-    text-align: right;
-    font-size: 1.5em;
+#loginSection,
+#registerSection {
+    max-width: 400px;
+    width: 90%;
+    margin: 8vh auto;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+#loginSection h2,
+#registerSection h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: var(--primary);
+}
+
+#loginSection button[type="submit"],
+#registerSection button[type="submit"] {
+    width: 100%;
+    background-color: var(--accent);
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.cart-container,
+.orders-container,
+.admin-section {
+    max-width: 1000px;
+    width: 90%;
+    margin: 40px auto;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+h2,
+h3 {
+    color: var(--primary);
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+    margin-top: 0;
+}
+
+/*
+   =========================================
+   5. TABLES
+   =========================================
+*/
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-top: 20px;
-    border-top: 2px solid #2b2d42;
-    padding-top: 10px;
-}
-
-.checkout-btn {
-    background-color: #2a9d8f;
-    font-size: 18px;
-    padding: 15px 30px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-}
-
-/*
-╔═════════════════════════════════════════════════════════════════════════╗
-║                                                                         ║
-║                             ORDERS STYLES                               ║
-║                                                                         ║
-╚═════════════════════════════════════════════════════════════════════════╝
-*/
-.orders-container {
-    width: 80%;
-    margin: 30px auto;
-    background: white;
-    padding: 20px;
-    border: 1px solid #ddd;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
 }
 
 th {
-    background-color: #2b2d42;
-    color: white;
+    background-color: #f8f9fa;
+    color: var(--primary);
+    font-weight: 700;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #eee;
 }
 
+td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+/* Status Colors */
 .status-pending {
-    color: #fca311;
+    color: var(--highlight);
+    /* Now Yellow/Gold */
     font-weight: bold;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+    /* Added slightly for readability on white */
 }
 
 .status-confirmed {
-    color: #2a9d8f;
+    color: var(--accent);
     font-weight: bold;
 }
 
 .status-rejected {
-    color: #d90429;
+    color: var(--danger);
     font-weight: bold;
 }
 
 /*
-╔═════════════════════════════════════════════════════════════════════════╗
-║                                                                         ║
-║                        ADMIN DASHBOARD STYLES                           ║
-║                                                                         ║
-╚═════════════════════════════════════════════════════════════════════════╝
+   =========================================
+   6. PRODUCTS GRID
+   =========================================
 */
-
-.admin-section {
-    width: 90%;
-    max-width: 1000px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.admin-section h3 {
-    border-bottom: 2px solid #2b2d42;
-    padding-bottom: 10px;
-    color: #2b2d42;
-}
-
-.form-container {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 20px;
-}
-
-#productError,
-#regError,
-#loginError {
-    color: #d90429;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-.edit-btn {
-    background-color: #2a9d8f;
-}
-
-.delete-btn {
-    background-color: #d90429;
-}
-
-.btn-small {
-    width: auto;
-    display: inline-block;
-    margin-top: 5px;
-}
-
-/*
-╔═════════════════════════════════════════════════════════════════════════╗
-║                                                                         ║
-║                         PRODUCT CARD GRID                               ║
-║                                                                         ║
-╚═════════════════════════════════════════════════════════════════════════╝
-*/
-
 .filter-bar {
     text-align: center;
-    margin: 20px 0;
+    margin: 30px 0;
 }
 
 .filter-bar select {
-    width: 200px;
-    padding: 10px;
+    width: 300px;
+    border-radius: 50px;
+    text-align: center;
+    text-align-last: center;
+    cursor: pointer;
 }
 
 #productsContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    max-width: 1200px;
     width: 90%;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
 }
 
 .product-card {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    position: relative;
-    /* For wishlist heart positioning */
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.2s;
+    transition: transform 0.3s ease;
+    position: relative;
 }
 
 .product-card:hover {
@@ -265,47 +316,144 @@ th {
 
 .product-card img {
     width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 4px;
+    height: 220px;
+    object-fit: contain;
+    margin-bottom: 15px;
 }
 
 .product-card h3 {
-    font-size: 1.1em;
-    margin: 10px 0 5px 0;
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: var(--primary);
 }
 
 .product-card .price {
-    font-size: 1.2em;
-    color: #2a9d8f;
-    font-weight: bold;
-    margin: 5px 0;
+    font-size: 1.4rem;
+    color: var(--accent);
+    font-weight: 800;
 }
 
-.product-card .stock {
-    font-size: 0.85em;
-    color: #666;
-    margin-bottom: 10px;
+.product-card button {
+    width: 100%;
+    margin-top: 10px;
 }
 
-/* Wishlist Heart Button */
 .wishlist-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #ccc;
-    font-size: 1.5em;
-    padding: 2px 6px;
-    border-radius: 50%;
-    line-height: 1;
-}
-
-.wishlist-btn:hover {
+    top: 15px;
+    right: 15px;
     background: white;
-    color: #ff4d6d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: #ccc;
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    width: 40px !important;
 }
 
 .wishlist-active {
     color: #ff4d6d !important;
+}
+
+/*
+   =========================================
+   7. ADMIN & CART EXTRAS
+   =========================================
+*/
+.admin-section .form-container {
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 30px;
+}
+
+.edit-btn {
+    background-color: var(--accent);
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.delete-btn {
+    background-color: var(--danger);
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.total-section {
+    text-align: right;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #f1f3f5;
+}
+
+.total-section p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.checkout-btn {
+    background-color: var(--accent);
+    padding: 15px 40px;
+    border-radius: 50px;
+}
+
+/* =========================================
+   CATEGORY TAGS
+   =========================================
+*/
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.category-tag {
+    background-color: #e9ecef;
+    color: var(--primary);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.category-tag:hover {
+    background-color: white;
+    border-color: var(--accent);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.delete-cat-btn {
+    text-decoration: none;
+    color: #999;
+    font-weight: bold;
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.delete-cat-btn:hover {
+    background-color: var(--danger);
+    color: white;
 }
