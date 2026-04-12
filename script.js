@@ -877,9 +877,9 @@ function renderHomeProducts() {
                 <p style="height: 40px; overflow: hidden;">${product.description}</p>
                 <p class="price">$${product.price}</p>
                 
-                <p style="color:orange; margin: 5px 0;">
-                    ${stars} <span style="color:black; font-size:0.8em">(${averageRating})</span>
-                    <button onclick="addReview(${product.id})" style="padding:2px 5px; font-size:10px; margin-left:5px; background:#8d99ae;">Rate</button>
+                <p class="product-rating">
+                    ${stars} <span>(${averageRating})</span>
+                    <button onclick="addReview(${product.id})" class="btn-rate">Rate</button>
                 </p>
 
                 <p class="stock">Stock: ${product.stock}</p>
@@ -1036,7 +1036,7 @@ function renderWishlist() {
                     <img src="${product.image}" alt="${product.name}">
                     <h3>${product.name}</h3>
                     <p class="price">$${product.price}</p>
-                    <p style="color:orange;">${stars}</p>
+                    <p class="product-rating">${stars}</p>
                     
                     <button onclick="addToCart(${product.id})" ${btnState}>${btnText}</button>
                 </div>
@@ -1208,7 +1208,7 @@ function loadUserOrders() {
         // 5. Create Return Button if order was approved
         var returnBtn = "";
         if (order.status === CONFIRMED) {
-            returnBtn = `<button onclick="requestReturn(${order.id})" style="background:#fca311; font-size:12px; margin-left:10px;">Return Order</button>`;
+            returnBtn = `<button onclick="requestReturn(${order.id})" class="btn-return">Return Order</button>`;
         }
         // 6. Render the order
         container.innerHTML += `
