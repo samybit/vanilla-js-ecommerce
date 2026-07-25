@@ -403,11 +403,17 @@ function logout() {
 // ===========================
 // AUTHENTICATION LOGIC
 // ===========================
+// Helper to get clean current page filename (handles trailing slashes, query params, hashes)
+function getCleanCurrentPage() {
+    var path = location.pathname.split('/').filter(Boolean).pop() || 'index.html';
+    return path.split('?')[0].split('#')[0];
+}
+
 // Check if user is logged in
 function checkAuth() {
     // 0. Get the current user
     var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
-    var currentPage = location.pathname.split('/').pop();
+    var currentPage = getCleanCurrentPage();
 
     if (currentPage === 'index.html' || currentPage === '') {
         return user;
@@ -419,18 +425,8 @@ function checkAuth() {
         return null;
     }
 
-    // 2. Get the current page name (e.g., "admin-dashboard.html", "products.html")
-    var currentPage = location.pathname.split('/').pop();
-
-    // 3. Switch based on Role to protect pages
+    // 2. Switch based on Role to protect admin page
     switch (user.role) {
-        case ADMIN:
-            // Admin is ONLY allowed on admin-dashboard.html. 
-            if (currentPage !== 'admin-dashboard.html') {
-                location.href = 'admin-dashboard.html';
-            }
-            break;
-
         case CUSTOMER:
             // Customer is NOT allowed on admin-dashboard.html.
             if (currentPage === 'admin-dashboard.html') {
@@ -446,7 +442,7 @@ function checkAuth() {
 function checkAlreadyLoggedIn() {
     if (localStorage.getItem(CURRENT_USER_KEY)) {
         var user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
-        if (user.role === 'admin') {
+        if (user.role === ADMIN) {
             location.href = 'admin-dashboard.html';
         } else {
             location.href = 'index.html';
@@ -743,12 +739,15 @@ function resetProdForm() {
     // Empty the form and change button and title text
     document.getElementById('productId').value = "";
     document.getElementById('productName').value = "";
-    document.getElementById('productImage').value = "";
+    var fileInput = document.getElementById('productImageFile');
+    if (fileInput) fileInput.value = "";
+    var base64Input = document.getElementById('productImageBase64');
+    if (base64Input) base64Input.value = "";
     document.getElementById('productPrice').value = "";
     document.getElementById('productStock').value = "";
     document.getElementById('productCategory').value = "";
     document.getElementById('productDescription').value = "";
-    document.getElementById('productError').innerText = "";
+    clearErrors();
 
     document.getElementById('saveBtn').innerText = "Create Product";
     document.getElementById('formTitle').innerText = "Add New Product";
@@ -768,7 +767,7 @@ function resetProdForm() {
 // Display Orders made
 function renderOrders() {
     // 1. Get the orders array
-    var orders = JSON.parse(localStorage.getItem(ORDERS_KEY));
+    var orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
     // 2. Get the table for display and empty it
     var tableBody = document.getElementById('orderTableBody');
     tableBody.innerHTML = "";
