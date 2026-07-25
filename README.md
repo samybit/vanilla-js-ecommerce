@@ -31,10 +31,10 @@ Since this is a client-side application with no external dependencies or build s
 ### Running Locally
 1. Clone or download this repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/samybit/vanilla-js-ecommerce
    cd vanilla-js-ecommerce
    ```
-2. Open `index.html` directly in your browser, or serve it using a local static server (e.g., Live Server extension in VS Code, or `npx serve .`).
+2. Open `index.html` directly in your browser, or serve it using a local static server (e.g., Live Server extension in VS Code, `pnpm dlx serve .`, or `npx serve .`).
 
 ---
 

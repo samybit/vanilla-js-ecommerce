@@ -138,12 +138,55 @@ if (fileInput) {
     if (!localStorage.getItem(USERS_KEY)) {
         localStorage.setItem(USERS_KEY, JSON.stringify([{ id: 1, name: 'Admin', email: 'admin@test.com', password: '123456', role: ADMIN }]));
     }
-    if (!localStorage.getItem(PRODUCTS_KEY)) {
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify([]));
+    
+    var defaultCategories = ['Dumbbells & Weights', 'Gym Equipment'];
+    if (!localStorage.getItem(CATEGORIES_KEY) || JSON.parse(localStorage.getItem(CATEGORIES_KEY)).length === 0) {
+        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(defaultCategories));
     }
-    if (!localStorage.getItem(CATEGORIES_KEY)) {
-        localStorage.setItem(CATEGORIES_KEY, JSON.stringify([]));
+
+    var defaultProducts = [
+        {
+            id: 101,
+            name: 'Purple Neoprene Dumbbells (Pair)',
+            image: 'assets/purple-neoprene-dumbbells.jpg',
+            category: 'Dumbbells & Weights',
+            price: 24.99,
+            description: 'Anti-slip neoprene coated 5 lb purple dumbbells ideal for home workouts, light cardio, and conditioning.',
+            stock: 15
+        },
+        {
+            id: 102,
+            name: 'Rubber Hex Dumbbell Set',
+            image: 'assets/black-hex-dumbbells.jpg',
+            category: 'Dumbbells & Weights',
+            price: 49.99,
+            description: 'Durable solid cast iron hex dumbbells with protective rubber casing and knurled chrome handles.',
+            stock: 0
+        },
+        {
+            id: 103,
+            name: 'Adjustable Hyperextension Bench',
+            image: 'assets/adjustable-hyperextension-bench.jpg',
+            category: 'Gym Equipment',
+            price: 189.99,
+            description: 'Heavy-duty adjustable hyperextension Roman chair with high-density foam padding for core and back workout.',
+            stock: 6
+        },
+        {
+            id: 104,
+            name: 'Commercial Roman Chair Bench',
+            image: 'assets/commercial-roman-chair.jpg',
+            category: 'Gym Equipment',
+            price: 229.99,
+            description: 'Professional grade back extension bench with ergonomic support pads and multi-angle adjustment.',
+            stock: 4
+        }
+    ];
+
+    if (!localStorage.getItem(PRODUCTS_KEY) || JSON.parse(localStorage.getItem(PRODUCTS_KEY)).length === 0) {
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(defaultProducts));
     }
+
     if (!localStorage.getItem(CART_KEY)) {
         localStorage.setItem(CART_KEY, JSON.stringify([]));
     }
@@ -874,7 +917,7 @@ function renderHomeProducts() {
                 <button class="wishlist-btn ${heartClass}" onclick="toggleWishlist(${product.id})">♥</button>
                 <img src="${product.image}" alt="${product.name}">
                 <h3>${product.name}</h3>
-                <p style="height: 40px; overflow: hidden;">${product.description}</p>
+                <p class="description">${product.description}</p>
                 <p class="price">$${product.price}</p>
                 
                 <p class="product-rating">
@@ -1035,6 +1078,7 @@ function renderWishlist() {
                     
                     <img src="${product.image}" alt="${product.name}">
                     <h3>${product.name}</h3>
+                    <p class="description">${product.description}</p>
                     <p class="price">$${product.price}</p>
                     <p class="product-rating">${stars}</p>
                     
