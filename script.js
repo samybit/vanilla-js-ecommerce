@@ -906,10 +906,12 @@ function renderHomeProducts() {
         // 6. Initialize the buttons state
         var btnState = "";
         var btnText = "Add to Cart";
+        var btnClass = "";
         // 7. Check if empty stock 
         if (product.stock <= 0) {
             btnState = "disabled";
             btnText = "Out of Stock";
+            btnClass = "btn-out-of-stock";
         }
         // 8. Display to the container
         var html = `
@@ -926,7 +928,7 @@ function renderHomeProducts() {
                 </p>
 
                 <p class="stock">Stock: ${product.stock}</p>
-                <button onclick="addToCart(${product.id})" ${btnState} style="width:100%">${btnText}</button>
+                <button onclick="addToCart(${product.id})" ${btnState} class="${btnClass}" style="width:100%">${btnText}</button>
             </div>
         `;
         container.innerHTML += html;
@@ -1067,9 +1069,11 @@ function renderWishlist() {
             // Stock Logic (reuse logic)
             var btnState = "";
             var btnText = "Add to Cart";
+            var btnClass = "";
             if (product.stock <= 0) {
                 btnState = "disabled";
                 btnText = "Out of Stock";
+                btnClass = "btn-out-of-stock";
             }
 
             container.innerHTML += `
@@ -1082,7 +1086,7 @@ function renderWishlist() {
                     <p class="price">$${product.price}</p>
                     <p class="product-rating">${stars}</p>
                     
-                    <button onclick="addToCart(${product.id})" ${btnState}>${btnText}</button>
+                    <button onclick="addToCart(${product.id})" ${btnState} class="${btnClass}">${btnText}</button>
                 </div>
             `;
         }

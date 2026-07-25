@@ -58,7 +58,7 @@ vanilla-js-ecommerce/
 ├── index.html           # Main customer product catalog
 ├── login.html           # Login & Registration page
 ├── cart.html            # Shopping cart & checkout
-├── orders.html           # Customer order history
+├── orders.html          # Customer order history
 ├── wishlist.html        # Saved wishlist items
 ├── admin-dashboard.html # Admin catalog & order management dashboard
 ├── script.js            # Core logic, auth checks, DOM rendering, & localStorage state
