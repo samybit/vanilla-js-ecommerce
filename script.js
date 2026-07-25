@@ -583,9 +583,9 @@ function renderProducts() {
         tableBody.innerHTML += `
             <tr>
                 <td>${product.id}</td>
-                <td><img src="${product.image}" width="50"></td>
+                <td><img src="${product.image}" class="admin-prod-img" alt="${product.name}"></td>
                 <td>${product.name}</td>
-                <td>$${product.price}</td>
+                <td>$${Number(product.price).toFixed(2)}</td>
                 <td>${product.category}</td>
                 <td>${product.stock}</td>
                 <td>
@@ -804,7 +804,7 @@ function renderOrders() {
             <tr>
                 <td>${order.id}</td>
                 <td>${order.userId}</td>
-                <td>$${order.total}</td>
+                <td>$${Number(order.total).toFixed(2)}</td>
                 <td style="color:${statusColor};">${order.status}</td>
                 <td>${actionButtons}</td>
             </tr>
@@ -919,7 +919,7 @@ function renderHomeProducts() {
                 <img src="${product.image}" alt="${product.name}">
                 <h3>${product.name}</h3>
                 <p class="description">${product.description}</p>
-                <p class="price">$${product.price}</p>
+                <p class="price">$${Number(product.price).toFixed(2)}</p>
                 
                 <p class="product-rating">
                     ${stars} <span>(${averageRating})</span>
@@ -1082,7 +1082,7 @@ function renderWishlist() {
                     <img src="${product.image}" alt="${product.name}">
                     <h3>${product.name}</h3>
                     <p class="description">${product.description}</p>
-                    <p class="price">$${product.price}</p>
+                    <p class="price">$${Number(product.price).toFixed(2)}</p>
                     <p class="product-rating">${stars}</p>
                     
                     <button onclick="addToCart(${product.id})" ${btnState} class="${btnClass}">${btnText}</button>
@@ -1117,7 +1117,7 @@ function loadCart() {
     // 4. Check if cart is empty
     if (cart.length === 0) {
         container.innerHTML = "<tr><td colspan='5' style='text-align:center'>Your cart is empty. <a href='index.html'>Go Shopping</a></td></tr>";
-        totalSpan.innerText = "0";
+        totalSpan.innerText = "0.00";
         return;
     }
     // 5. Loop through the cart
@@ -1132,13 +1132,13 @@ function loadCart() {
                 <td><img src="${product.image}" width="50"></td>
                 <td>${product.name}</td>
                 <td>${product.category}</td>
-                <td>$${product.price}</td>
+                <td>$${Number(product.price).toFixed(2)}</td>
                 <td><button onclick="removeFromCart(${i})">Remove</button></td>
             </tr>
         `;
     }
     // 6. Update the total
-    totalSpan.innerText = total;
+    totalSpan.innerText = total.toFixed(2);
 }
 
 // Remove
@@ -1191,6 +1191,7 @@ function checkout() {
     for (var i = 0; i < cart.length; i++) {
         total += parseFloat(cart[i].price);
     }
+    total = parseFloat(total.toFixed(2));
 
     // 7. Create Order Object
     var newOrder = {
@@ -1263,7 +1264,7 @@ function loadUserOrders() {
                 <td>#${order.id}</td>
                 <td>${order.date || 'Just now'}</td>
                 <td>${itemsList}</td>
-                <td>$${order.total}</td>
+                <td>$${Number(order.total).toFixed(2)}</td>
                 <td class="${statusClass}">
                     ${order.status}
                     ${returnBtn}
