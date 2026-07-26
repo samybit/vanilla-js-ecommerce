@@ -403,10 +403,18 @@ function logout() {
 // ===========================
 // AUTHENTICATION LOGIC
 // ===========================
-// Helper to get clean current page filename (handles trailing slashes, query params, hashes)
+// Helper to get clean current page filename (handles trailing slashes, subpaths, query params, hashes)
 function getCleanCurrentPage() {
-    var path = location.pathname.split('/').filter(Boolean).pop() || 'index.html';
-    return path.split('?')[0].split('#')[0];
+    var raw = location.pathname.split('?')[0].split('#')[0];
+    var page = raw.split('/').filter(Boolean).pop() || 'index.html';
+    
+    // On subpath deployments like GitHub Pages (e.g. /vanilla-js-ecommerce/),
+    // if the last segment does not end with .html, it is the root/home page.
+    if (!page.endsWith('.html')) {
+        return 'index.html';
+    }
+    
+    return page;
 }
 
 // Check if user is logged in
